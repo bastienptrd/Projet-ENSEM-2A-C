@@ -41,6 +41,11 @@ int main(){
     int score = 0;
     int evolutionScore = 0;
 
+    int nombreFruitMange = 0;
+    int nombreFruitSpecialMange = 0;
+
+    int distanceParcouru = 0;
+
     //Detection clavier
     pthread_t clavier;
 
@@ -49,15 +54,13 @@ int main(){
 
     #pragma endregion
 
-    //Pour voir les warnings debbug à supprimer à la fin
-    clearAffichage();
-    affichage(terrain, largeur, longueur, listEntite, nombreEntite);
-    sleep(2);
-
     //Decompte vers le début
     for (int i = 3; i > 0; i--){
         clearAffichage();
-        printf("%d\n", i);
+        printfDemiLongueur(1, longueur, '=');
+        printf(" %d ", i);
+        printfDemiLongueur(1, longueur, '=');
+        printf("\n");
         affichage(terrain, largeur, longueur, listEntite, nombreEntite);
         sleep(1);
     }
@@ -81,32 +84,54 @@ int main(){
             terrain[joueur->posX][joueur->posY] = joueur->longueur - 1 + CLASSESERPENT * joueur->num;
 
             //Si on rencontre un fruit on agrandit le serpent et on fait évoluer le score
-            if (caseDirection == FRUIT || caseDirection == FRUITSPECIAL){
-                evolutionScore = 10 + (caseDirection == FRUITSPECIAL) * 40;
+            if (caseDirection == FRUIT){
+                evolutionScore = 10;
+                nombreFruitMange++;
+                ajouterClasseTerrain(terrain, largeur, longueur, joueur->num);
+                joueur->longueur++;
+            } else if (caseDirection == FRUITSPECIAL){
+                evolutionScore = 50;
+                nombreFruitSpecialMange++;
                 ajouterClasseTerrain(terrain, largeur, longueur, joueur->num);
                 joueur->longueur++;
             }
 
             //On déplace la tête
             deplacerDirection(joueur);
+
+            distanceParcouru++;
+
         } else { //Si c'est un obstacle
             launched = false;
         }
         pthread_mutex_unlock(&dmutex);
 
+        //On fait les tests sur le fruit spécial
+
+
         //Faire l'affichage
         clearAffichage();
+        printf("Score : %d", score);
+        if (evolutionScore > 0){
+            printf(" + %d", evolutionScore);
+        }
+        printf("\n");
         affichage(terrain, largeur, longueur, listEntite, nombreEntite);
 
         //Evolution du score
         score += evolutionScore;
+        evolutionScore = 0;
 
         //Temps de pause pour soulager le cpu
         usleep(1000000 / FREQAFFICHAGE);
     }
 
-    printf("FIN\n");
-    
+    //Affichage du message de fin
+    afficherFin(longueur, score, joueur->longueur, nombreFruitMange, nombreFruitSpecialMange, distanceParcouru);
+
+    //Enregistrement fichier
+
+
     //On arrete le thread clavier
     pthread_cancel(clavier);
     pthread_join(clavier, NULL);
