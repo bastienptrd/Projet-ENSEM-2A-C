@@ -14,9 +14,22 @@ void initTerrain(int ** tableau, int largeur, int longeur){
     for (int i = 0; i < largeur; i++){
         for (int j = 0; j < longeur; j++){
             if (i == 0 || j == 0 || i == largeur - 1 || j == longeur - 1){
-                tableau[i][j] = -1;
+                tableau[i][j] = MUR;
             } else {
-                tableau[i][j] = 0;
+                tableau[i][j] = VIDE;
+            }
+        }
+    }
+}
+
+void updateTerrain(int ** tableau, int largeur, int longeur){
+    for (int i = 0; i < largeur; i++){
+        for (int j = 0; j < longeur; j++){
+            if (tableau[i][j] % CLASSESERPENT > 0){
+                tableau[i][j]--;
+                if (tableau[i][j] % CLASSESERPENT == 0){
+                    tableau[i][j] = VIDE;
+                }
             }
         }
     }
