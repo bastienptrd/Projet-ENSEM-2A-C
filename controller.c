@@ -1,5 +1,7 @@
 #include "controller.h"
 
+static struct termios origtc, newtc;
+
 //Fait par IA
 static void restaurer_terminal(void *arg)
 {

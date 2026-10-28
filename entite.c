@@ -12,7 +12,7 @@ entite * creerEntite(int posX, int posY, int direction, char nom, int num, int l
     return ent;
 }
 
-bool peutDeplacerDirection(entite * ent, int ** terrain){
+int caseSuivante(entite * ent, int ** terrain){
     int caseObserve = 0;
     if (ent->direction == HAUT){
         caseObserve = terrain[ent->posX - 1][ent->posY];
@@ -23,7 +23,7 @@ bool peutDeplacerDirection(entite * ent, int ** terrain){
     } else if (ent->direction == GAUCHE){
         caseObserve = terrain[ent->posX][ent->posY - 1];
     }
-    return (caseObserve < 0);
+    return caseObserve;
 }
 
 void deplacerDirection(entite * ent){
