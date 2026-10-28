@@ -1,3 +1,6 @@
+#ifndef ENTITE_H
+#define ENTITE_H
+
 #include "config.h"
 
 typedef struct{
@@ -5,7 +8,13 @@ typedef struct{
     int posY;
     int direction;
     char nom;
+    int num;
+    int longueur;
 } entite;
 
-entite * creerEntite(int posX, int posY, int direction, char nom); //Constructeur d'entite
+entite * creerEntite(int posX, int posY, int direction, char nom, int num, int longueur); //Constructeur d'entite
+bool peutDeplacerDirection(entite * ent, int ** terrain);
+void deplacerDirection(entite * ent);
 void freeEntite(entite * ent);
+
+#endif
