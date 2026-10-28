@@ -10,7 +10,7 @@ EXEC = snake
 BUILD_DIR = build
 
 # Fichiers sources, objets et dépendances
-SRC = main.c view.c controller.c
+SRC = $(wildcard *.c)
 OBJ = $(SRC:%.c=$(BUILD_DIR)/%.o)
 DEP = $(OBJ:.o=.d)
 
