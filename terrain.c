@@ -35,6 +35,16 @@ void updateTerrain(int ** tableau, int largeur, int longeur){
     }
 }
 
+void ajouterClasseTerrain(int ** tableau, int largeur, int longeur, int num){
+    for (int i = 0; i < largeur; i++){
+        for (int j = 0; j < longeur; j++){
+            if (tableau[i][j] / (num * 1000) == 1){
+                tableau[i][j]++;
+            }
+        }
+    }
+}
+
 void freeTerrain(int ** tableau, int largeur){
     //Libération en mémoire du terrain
     for (int i = 0; i < largeur; i++){
