@@ -35,9 +35,9 @@ void updateTerrain(int ** tableau, int largeur, int longeur){
     }
 }
 
-void ajouterClasseTerrain(int ** tableau, int largeur, int longeur, int num){
+void ajouterClasseTerrain(int ** tableau, int largeur, int longueur, int num){
     for (int i = 0; i < largeur; i++){
-        for (int j = 0; j < longeur; j++){
+        for (int j = 0; j < longueur; j++){
             if (tableau[i][j] / (num * 1000) == 1){
                 tableau[i][j]++;
             }
@@ -45,11 +45,31 @@ void ajouterClasseTerrain(int ** tableau, int largeur, int longeur, int num){
     }
 }
 
+int nombreCaseObj(int ** tableau, int largeur, int longueur, int obj){
+    int somme = 0;
+    for (int i = 0; i < largeur; i++){
+        for (int j = 0; j < longueur; j++){
+            if (tableau[i][j] == obj){
+                somme++;
+            }
+        }
+    }
+    return somme;
+}
+
 void ajouterAleatoireTerrain(int ** tableau, int largeur, int longueur, int nombre, int obj){
     for (int k = 0; k < nombre; k++){
-        int posX = rand() % (largeur - 2) + 1;
-        int posY = rand() % (longueur - 2) + 1;
-        tableau[posX][posY] = obj;
+        int indexCase = rand() % nombreCaseObj(tableau, largeur, longueur, VIDE);
+        for (int i = 0; i < largeur; i++){
+            for (int j = 0; j < longueur; j++){
+                if (tableau[i][j] == VIDE && indexCase >= 0){
+                    if (indexCase == 0){
+                        tableau[i][j] = obj;
+                    }
+                    indexCase--;
+                }
+            }
+        }
     }
 }
 

@@ -38,8 +38,6 @@ int main(){
     listEntite[0] = joueur;
     nombreEntite++;
 
-    terrain[5][5] = FRUIT;
-
     #pragma endregion
     
     //Score
@@ -94,14 +92,15 @@ int main(){
                 nombreFruitMange++;
                 ajouterClasseTerrain(terrain, largeur, longueur, joueur->num);
                 joueur->longueur++;
+
+                //On rajoute un fruit sur le terrain
+                ajouterAleatoireTerrain(terrain, largeur, longueur, 1, FRUIT); 
             } else if (caseDirection == FRUITSPECIAL){
                 evolutionScore = 50;
                 nombreFruitSpecialMange++;
                 ajouterClasseTerrain(terrain, largeur, longueur, joueur->num);
                 joueur->longueur++;
 
-                //On rajoute un fruit sur le terrain
-                ajouterAleatoireTerrain(terrain, largeur, longueur, 1, FRUIT); 
             }
 
 
