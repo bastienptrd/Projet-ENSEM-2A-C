@@ -26,6 +26,7 @@ extern pthread_mutex_t dmutex;
 
 enum direction {HAUT,BAS,GAUCHE,DROITE};
 
+#define NOMBREMUR 10
 #define NOMBREFRUIT 5
 #define NOMBREMAXENTITE 8 // 2 serpents + 5 fruits + fruit spéciale
 

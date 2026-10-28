@@ -11,6 +11,9 @@ int main(){
     int largeur = LARGEURTERRAIN; //permettra de faire des tailles variables par la suite
     int longueur = LONGEURTERRAIN; //permettra de faire des tailles variables par la suite
 
+    int nombreMur = NOMBREMUR; //permettra de faire des nombres variables par la suite
+    int nombreFruit = NOMBREFRUIT; //permettra de faire des nombres variables par la suite
+
     //initialisation terrain
     int** terrain = creerTerrain(largeur, longueur);
     initTerrain(terrain, largeur, longueur);
@@ -19,8 +22,10 @@ int main(){
     srand(time(0));
 
     //Ajout des murs
+    ajouterAleatoireTerrain(terrain, largeur, longueur, nombreMur, MUR);
 
     //Ajout des fruits
+    ajouterAleatoireTerrain(terrain, largeur, longueur, nombreFruit, FRUIT);
 
     #pragma endregion
 
@@ -85,7 +90,11 @@ int main(){
                 evolutionScore = 10 + (caseDirection == FRUITSPECIAL) * 40;
                 ajouterClasseTerrain(terrain, largeur, longueur, joueur->num);
                 joueur->longueur++;
+
+                //On rajoute un fruit sur le terrain
+                ajouterAleatoireTerrain(terrain, largeur, longueur, 1, FRUIT); 
             }
+
 
             //On déplace la tête
             deplacerDirection(joueur);

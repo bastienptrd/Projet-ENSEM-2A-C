@@ -45,6 +45,14 @@ void ajouterClasseTerrain(int ** tableau, int largeur, int longeur, int num){
     }
 }
 
+void ajouterAleatoireTerrain(int ** tableau, int largeur, int longueur, int nombre, int obj){
+    for (int k = 0; k < nombre; k++){
+        int posX = rand() % (largeur - 2) + 1;
+        int posY = rand() % (longueur - 2) + 1;
+        tableau[posX][posY] = obj;
+    }
+}
+
 void freeTerrain(int ** tableau, int largeur){
     //Libération en mémoire du terrain
     for (int i = 0; i < largeur; i++){
