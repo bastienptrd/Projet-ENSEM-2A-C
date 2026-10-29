@@ -30,6 +30,8 @@ void affichage(int** tableau, int largeur, int longeur, entite* listEntite[NOMBR
                 printf(" ");
             } else if (tableau[i][j] == MUR){
                 printf("%c", CHARMURS);
+            } else if (tableau[i][j] == OBSTACLE){
+                printf("%c", CHAROBSTACLES);
             } else if (tableau[i][j] == FRUIT){
                 printf("%c", CHARFRUITS);
             } else if (tableau[i][j] == FRUITSPECIAL){
