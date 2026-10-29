@@ -14,10 +14,11 @@ extern pthread_mutex_t dmutex;
 #define LONGEURTERRAIN 20
 
 //Case
-#define MUR 0 //Bloc avec collision >=0
-#define VIDE -1
-#define FRUIT -2
-#define FRUITSPECIAL -3
+#define MUR 0 
+#define OBSTACLE -1 //Bloc avec collision >=-1
+#define VIDE -2
+#define FRUIT -3
+#define FRUITSPECIAL -4
 
 #pragma endregion
 
@@ -28,9 +29,15 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 
 #define NOMBREMUR 10
 #define NOMBREFRUIT 5
-#define NOMBREMAXENTITE 8 // 2 serpents + 5 fruits + fruit spéciale
+#define NOMBREMAXENTITE 2 // 2 serpents
 
+#define FREQAPPARITIONFRUITSPECIAL 50
+#define TEMPAPPARITIONFRUITSPECIAL 10
+
+#define DIRECTIONINITIALESERPENT HAUT
 #define TAILLEINITIALESERPENT 3
 #define CLASSESERPENT 1000
+
+#define NOMBREEESAIMAX 10000
 
 #pragma endregion

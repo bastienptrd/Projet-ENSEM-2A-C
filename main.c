@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "view.h"
 #include "controller.h"
 
@@ -6,6 +8,17 @@ pthread_mutex_t dmutex = PTHREAD_MUTEX_INITIALIZER;
 int main(){
 
     #pragma region INITIALISATION
+
+    #pragma region INITIALISATION ENTITE
+    //Initialisation entites
+    entite* listEntite[NOMBREMAXENTITE];
+
+    int nombreEntite = 0;
+    entite * joueur = creerEntite(0, 0, DIRECTIONINITIALESERPENT, '1', nombreEntite + 1, TAILLEINITIALESERPENT);
+    listEntite[0] = joueur;
+    nombreEntite++;
+
+    #pragma endregion
 
     #pragma region INITIALISATION TERRAIN
     int largeur = LARGEURTERRAIN; //permettra de faire des tailles variables par la suite
@@ -22,24 +35,34 @@ int main(){
     srand(time(0));
 
     //Ajout des murs
-    ajouterAleatoireTerrain(terrain, largeur, longueur, nombreMur, MUR);
+    ajouterAleatoireTerrain(terrain, largeur, longueur, nombreMur, OBSTACLE, NULL, NULL);
+
+    //Ajouter le serpent (nécessite 2 case vide)
+    int nombreEssai = 0;
+    do {
+        ajouterAleatoireTerrain(terrain, largeur, longueur, 1, VIDE, &(joueur->posX), &(joueur->posY));
+        
+        //Bloquer en cas de situation bloquante pour la position du seprent
+        nombreEssai++;
+        if (nombreEssai == NOMBREEESAIMAX){
+            printf("ERREUR : pas assez d'espace pour le serpent dans cette direction");
+            return 1;
+        }
+
+    } while (terrain[joueur->posX][joueur->posY] != VIDE || caseSuivante(joueur, terrain) != VIDE);
 
     //Ajout des fruits
-    ajouterAleatoireTerrain(terrain, largeur, longueur, nombreFruit, FRUIT);
-
-    #pragma endregion
-
-    #pragma region INITIALISATION ENTITE
-    //Initialisation entites
-    entite* listEntite[NOMBREMAXENTITE];
-
-    int nombreEntite = 0;
-    entite * joueur = creerEntite(3, 3, 0, '1', nombreEntite + 1, TAILLEINITIALESERPENT);
-    listEntite[0] = joueur;
-    nombreEntite++;
+    terrain[joueur->posX][joueur->posY] = FRUIT; //Empeche la génération en la position du joueur
+    ajouterAleatoireTerrain(terrain, largeur, longueur, nombreFruit, FRUIT, NULL, NULL);
+    terrain[joueur->posX][joueur->posY] = VIDE; //Empeche la génération en la position du joueur
 
     #pragma endregion
     
+    //Fruit spécial
+    time_t tempApparition = -1;
+    int posFruitSpecialX;
+    int posFruitSpecialY;
+
     //Score
     int score = 0;
     int evolutionScore = 0;
@@ -65,7 +88,7 @@ int main(){
         printfDemiLongueur(1, longueur, '=');
         printf("\n");
         affichage(terrain, largeur, longueur, listEntite, nombreEntite);
-        sleep(1);
+        sleep(2);
     }
     
     //Recuperation des entrées clavier
@@ -82,7 +105,7 @@ int main(){
 
         //On regarde la prochaine case atteinte par le serpent
         int caseDirection = caseSuivante(joueur, terrain);
-        if (caseDirection < 0){ //Si la case n'est pas "solide"
+        if (caseDirection < -1){ //Si la case n'est pas "solide"
             //On pose une partie du corp du serpent
             terrain[joueur->posX][joueur->posY] = joueur->longueur - 1 + CLASSESERPENT * joueur->num;
 
@@ -94,13 +117,13 @@ int main(){
                 joueur->longueur++;
 
                 //On rajoute un fruit sur le terrain
-                ajouterAleatoireTerrain(terrain, largeur, longueur, 1, FRUIT); 
+                ajouterAleatoireTerrain(terrain, largeur, longueur, 1, FRUIT, NULL, NULL); 
             } else if (caseDirection == FRUITSPECIAL){
                 evolutionScore = 50;
                 nombreFruitSpecialMange++;
                 ajouterClasseTerrain(terrain, largeur, longueur, joueur->num);
                 joueur->longueur++;
-
+                tempApparition = -1;
             }
 
 
@@ -115,7 +138,13 @@ int main(){
         pthread_mutex_unlock(&dmutex);
 
         //On fait les tests sur le fruit spécial
-
+        if (tempApparition == -1 && rand() % FREQAPPARITIONFRUITSPECIAL * FREQAFFICHAGE == 0){
+            tempApparition = time(NULL);
+            ajouterAleatoireTerrain(terrain, largeur, longueur, 1, FRUITSPECIAL, &posFruitSpecialX, &posFruitSpecialY);
+        } else if (tempApparition != -1 && difftime(time(NULL), tempApparition) > TEMPAPPARITIONFRUITSPECIAL){
+            terrain[posFruitSpecialX][posFruitSpecialY] = VIDE;
+            tempApparition = -1;
+        }
 
         //Faire l'affichage
         clearAffichage();

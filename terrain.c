@@ -57,14 +57,26 @@ int nombreCaseObj(int ** tableau, int largeur, int longueur, int obj){
     return somme;
 }
 
-void ajouterAleatoireTerrain(int ** tableau, int largeur, int longueur, int nombre, int obj){
+void ajouterAleatoireTerrain(int ** tableau, int largeur, int longueur, int nombre, int obj, int* posX, int* posY){
     for (int k = 0; k < nombre; k++){
-        int indexCase = rand() % nombreCaseObj(tableau, largeur, longueur, VIDE);
+        int nombreCaseVide = nombreCaseObj(tableau, largeur, longueur, VIDE);
+
+        //Test de cas impossible
+        if (nombreCaseVide == 0){
+            printf("ERREUR : Pas assez de case pour placer %d", obj);
+            return;
+        }
+
+        int indexCase = rand() % nombreCaseVide;
         for (int i = 0; i < largeur; i++){
             for (int j = 0; j < longueur; j++){
                 if (tableau[i][j] == VIDE && indexCase >= 0){
                     if (indexCase == 0){
                         tableau[i][j] = obj;
+                        if (posX != NULL){
+                            *posX = i;
+                            *posY = j;
+                        }
                     }
                     indexCase--;
                 }
