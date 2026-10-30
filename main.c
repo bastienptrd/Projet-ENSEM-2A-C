@@ -2,11 +2,11 @@
 
 #include "view.h"
 #include "controller.h"
+#include "gestionFichier.h"
 
 pthread_mutex_t dmutex = PTHREAD_MUTEX_INITIALIZER;
 
 int main(){
-
     #pragma region INITIALISATION
 
     #pragma region INITIALISATION ENTITE
@@ -28,8 +28,9 @@ int main(){
     int nombreFruit = NOMBREFRUIT; //permettra de faire des nombres variables par la suite
 
     //initialisation terrain
-    int** terrain = creerTerrain(largeur, longueur);
-    initTerrain(terrain, largeur, longueur);
+    //int** terrain = creerTerrain(largeur, longueur);
+    //initTerrain(terrain, largeur, longueur);
+    int ** terrain = lireTerrain("plateau.txt", &largeur, &longueur);
 
     //Initialisation du random
     srand(time(0));
