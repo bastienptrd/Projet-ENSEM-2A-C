@@ -27,7 +27,7 @@ void affichage(int** tableau, int largeur, int longeur, entite* listEntite[NOMBR
 
             //Sinon on dessine le terrain
             if (tableau[i][j] == VIDE){
-                printf(" ");
+                printf("%c", CHARVIDE);
             } else if (tableau[i][j] == MUR){
                 printf("%c", CHARMURS);
             } else if (tableau[i][j] == OBSTACLE){

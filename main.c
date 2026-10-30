@@ -76,6 +76,9 @@ int main(){
     //Detection clavier
     pthread_t clavier;
 
+    char pseudo[20];
+    scanf("%s", pseudo);
+
     //Condition de la boucle principale
     bool launched = true;
 
@@ -168,7 +171,7 @@ int main(){
     afficherFin(longueur, score, joueur->longueur, nombreFruitMange, nombreFruitSpecialMange, distanceParcouru);
 
     //Enregistrement fichier
-
+    ecrire("scores", pseudo, score);
 
     //On arrete le thread clavier
     pthread_cancel(clavier);

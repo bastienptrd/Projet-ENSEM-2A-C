@@ -47,6 +47,7 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 
 #pragma region AFFICHAGE
 
+#define CHARVIDE ' '
 #define CHARMURS '#'
 #define CHAROBSTACLES 'X'
 #define CHARFRUITS '*'
