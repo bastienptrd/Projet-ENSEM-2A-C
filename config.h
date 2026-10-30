@@ -1,3 +1,6 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,3 +44,17 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 #define NOMBREEESAIMAX 10000
 
 #pragma endregion
+
+#pragma region AFFICHAGE
+
+#define CHARMURS '#'
+#define CHAROBSTACLES 'X'
+#define CHARFRUITS '*'
+#define CHARFRUITSPECIAL '@'
+
+#define NOMBRERETOURCLEAN 15
+
+#define FREQAFFICHAGE 2 //image par sec
+#pragma endregion
+
+#endif
