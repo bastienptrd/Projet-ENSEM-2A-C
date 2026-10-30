@@ -7,13 +7,14 @@
 #include <unistd.h>
 #include <pthread.h>
 
-extern pthread_mutex_t dmutex;
+extern pthread_mutex_t dmutexjoueur1;
+extern pthread_mutex_t dmutexjoueur2;
 
 // ===================== TERRAIN =====================
 #pragma region TERRAIN
 
 //Taille
-#define LARGEURTERRAIN 10
+#define LARGEURTERRAIN 20
 #define LONGEURTERRAIN 20
 
 //Case

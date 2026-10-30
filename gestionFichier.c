@@ -56,6 +56,6 @@ void ecrire(char * fichier, char * pseudo, int score){
     struct tm *info = localtime(&moment);
     strftime(buffer, sizeof(buffer), "%d/%m/%Y à %H:%M:%S", info);
 
-	fprintf(f, "%s à fait %d le %s", pseudo, score, buffer);
+	fprintf(f, "%s à fait %d le %s\n", pseudo, score, buffer);
     fclose(f);
 }
