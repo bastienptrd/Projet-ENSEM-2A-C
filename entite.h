@@ -10,6 +10,7 @@ typedef struct{
     char nom;
     int num;
     int longueur;
+    bool enVie;
 } entite;
 
 entite * creerEntite(int posX, int posY, int direction, char nom, int num, int longueur); //Constructeur d'entite

@@ -22,24 +22,15 @@ void initTerrain(int ** tableau, int largeur, int longeur){
     }
 }
 
-void updateTerrain(int ** tableau, int largeur, int longeur){
+void ajouterClasseTerrain(int ** tableau, int largeur, int longueur, int num, int val){
     for (int i = 0; i < largeur; i++){
-        for (int j = 0; j < longeur; j++){
-            if (tableau[i][j] % CLASSESERPENT > 0){
-                tableau[i][j]--;
+        for (int j = 0; j < longueur; j++){
+            printf("%d, %d (%d, %d)\n", tableau[i][j] / (num * CLASSESERPENT) == 1, tableau[i][j], i, j);
+            if (tableau[i][j] / (num * CLASSESERPENT) == 1){
+                tableau[i][j] += val;
                 if (tableau[i][j] % CLASSESERPENT == 0){
                     tableau[i][j] = VIDE;
                 }
-            }
-        }
-    }
-}
-
-void ajouterClasseTerrain(int ** tableau, int largeur, int longueur, int num){
-    for (int i = 0; i < largeur; i++){
-        for (int j = 0; j < longueur; j++){
-            if (tableau[i][j] / (num * 1000) == 1){
-                tableau[i][j]++;
             }
         }
     }

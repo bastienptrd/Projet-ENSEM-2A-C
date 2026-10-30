@@ -9,6 +9,7 @@ entite * creerEntite(int posX, int posY, int direction, char nom, int num, int l
     ent->nom = nom;
     ent->num = num;
     ent->longueur = longueur;
+    ent->enVie = true;
     return ent;
 }
 
