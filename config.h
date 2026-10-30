@@ -7,13 +7,14 @@
 #include <unistd.h>
 #include <pthread.h>
 
-extern pthread_mutex_t dmutex;
+extern pthread_mutex_t dmutexjoueur1;
+extern pthread_mutex_t dmutexjoueur2;
 
 // ===================== TERRAIN =====================
 #pragma region TERRAIN
 
 //Taille
-#define LARGEURTERRAIN 10
+#define LARGEURTERRAIN 20
 #define LONGEURTERRAIN 20
 
 //Case
@@ -23,6 +24,11 @@ extern pthread_mutex_t dmutex;
 #define FRUIT -3
 #define FRUITSPECIAL -4
 
+#define FRUITINFINIE 0
+#define NOMBREFRUITAJOUTER 1
+
+#define SCOREFRUIT 10
+#define SCOREFRUITSPECIAL 50
 #pragma endregion
 
 // ===================== ENTITE =====================
@@ -38,10 +44,17 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 #define TEMPAPPARITIONFRUITSPECIAL 10
 
 #define DIRECTIONINITIALESERPENT HAUT
+
+//Taille
 #define TAILLEINITIALESERPENT 3
+#define TAILLEAJOUTEEFRUIT 1
+#define TAILLEAJOUTEEFRUITSPECIAL 1
+
+//Séparateur case terrain
 #define CLASSESERPENT 1000
 
-#define NOMBREEESAIMAX 10000
+//Apparition serpent
+#define NOMBREEESSAIMAX 10000
 
 #pragma endregion
 

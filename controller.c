@@ -1,33 +1,36 @@
 #include "controller.h"
 
-static struct termios origtc, newtc;
-
 //Fait par IA
-static void restaurer_terminal(void *arg)
+static struct termios ancienTerminal;
+
+void initialiserTerminal(void)
 {
-    (void)arg;
-    tcsetattr(STDIN_FILENO, TCSANOW, &origtc);
+    struct termios nouveauTerminal;
+
+    tcgetattr(STDIN_FILENO, &ancienTerminal);
+
+    nouveauTerminal = ancienTerminal;
+    nouveauTerminal.c_lflag &= ~(ICANON | ECHO);
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &nouveauTerminal);
+}
+//Fait par IA
+void restaurerTerminal(void)
+{
+    tcsetattr(STDIN_FILENO, TCSANOW, &ancienTerminal);
 }
 
-void *lire_clavier(void *arg)
+void *lireClavier(void *arg)
 {
-    entite *ent = arg;
+    entites * ents = arg;
+    entite * ent = ents->listEntite[0];
     char c;
-
-    tcgetattr(STDIN_FILENO, &origtc);
-    newtc = origtc;
-    newtc.c_lflag &= ~(ICANON | ECHO);
-
-    pthread_cleanup_push(restaurer_terminal, NULL);
-
-    tcsetattr(STDIN_FILENO, TCSANOW, &newtc);
 
     while (1) {
         c = getchar();
 
         if (c != EOF) {
-            pthread_mutex_lock(&dmutex);
-
+            pthread_mutex_lock(&dmutexjoueur1);
             if (c == 'z' && ent->direction != BAS){
                 ent->direction = HAUT;
             }
@@ -40,13 +43,36 @@ void *lire_clavier(void *arg)
             else if (c == 'q' && ent->direction != DROITE){
                 ent->direction = GAUCHE;
             }
+            pthread_mutex_unlock(&dmutexjoueur1);
 
-            pthread_mutex_unlock(&dmutex);
+            if (ents->nombreEntite == 1){
+                continue;
+            }
+
+
+            if (c == 27){
+                getchar();
+                c = getchar();
+            }
+            pthread_mutex_lock(&dmutexjoueur2);
+
+            if (c == 'A' && ents->listEntite[1]->direction != BAS){
+                ents->listEntite[1]->direction = HAUT;
+            }
+            else if (c == 'B' && ents->listEntite[1]->direction != HAUT){
+                ents->listEntite[1]->direction = BAS;
+            }
+            else if (c == 'C' && ents->listEntite[1]->direction != GAUCHE){
+                ents->listEntite[1]->direction = DROITE;
+            }
+            else if (c == 'D' && ents->listEntite[1]->direction != DROITE){
+                ents->listEntite[1]->direction = GAUCHE;
+            }
+            pthread_mutex_unlock(&dmutexjoueur2);
+
         }
 
         usleep(1000000 / FREQCLAVIER);
     }
-
-    pthread_cleanup_pop(1);
     return NULL;
 }

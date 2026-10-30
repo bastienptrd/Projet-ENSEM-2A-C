@@ -27,7 +27,6 @@ int** lireTerrain(char *fichier, int *largeur, int* longueur){
 	i = 0; j = 0;
 	while ((ch = getc(f)) != EOF) {
         if (ch != '\n') {
-			printf("%d, %d, %d, %d\n", i, j, *largeur, *longueur);
 			if (j < *longueur){
 				if (ch == CHARMURS) {
 					plateau[i][j] = MUR;
@@ -56,6 +55,6 @@ void ecrire(char * fichier, char * pseudo, int score){
     struct tm *info = localtime(&moment);
     strftime(buffer, sizeof(buffer), "%d/%m/%Y à %H:%M:%S", info);
 
-	fprintf(f, "%s à fait %d le %s", pseudo, score, buffer);
+	fprintf(f, "%s à fait %d le %s\n", pseudo, score, buffer);
     fclose(f);
 }
