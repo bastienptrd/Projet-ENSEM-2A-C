@@ -44,10 +44,16 @@ void affichage(int** tableau, int largeur, int longeur, entite* listEntite[NOMBR
     }
 }
 
-void printfDemiLongueur(int tailleMessage, int longueur, char symb){
+void printfLongueur(char * message, int longueur, char symb){
+    int tailleMessage = strlen(message);
     for (int i = 0; i < (longueur - tailleMessage - 2) / 2; i++){
         printf("%c", symb);
     }
+    printf(" %s ", message);
+    for (int i = 0; i < (longueur - tailleMessage - 2) / 2; i++){
+        printf("%c", symb);
+    }
+    printf("\n");
 }
 
 void clearAffichage(){
@@ -57,12 +63,7 @@ void clearAffichage(){
     }
 }
 
-void afficherFin(int longueur, int score, int longeurSerpent, int nombreFruitMange, int nombreFruitSpecialMange, int distanceParcouru){
-    printf("\n");
-    printfDemiLongueur(3, longueur, '=');
-    printf(" FIN ");
-    printfDemiLongueur(3, longueur, '=');
-    printf("\n");
+void afficherFin(int score, int longeurSerpent, int nombreFruitMange, int nombreFruitSpecialMange, int distanceParcouru){
     printf("Score : %d\n", score);
     printf("Taille serpent : %d\n", longeurSerpent);
     printf("Nombre de fruit mangé : %d\n", nombreFruitMange);
