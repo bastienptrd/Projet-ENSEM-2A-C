@@ -43,7 +43,7 @@ int** lireTerrain(char *fichier, int *largeur, int* longueur){
     return plateau;
 }
 
-void ecrire(char * fichier, char * pseudo, int score){
+void ecrire(char * fichier, char * pseudo, int score, int graine){
 	FILE* f = fopen(fichier,"a");
     if (f == NULL){
         printf("Je ne peux pas ouvrir le fichier %s\n",fichier);
@@ -55,6 +55,6 @@ void ecrire(char * fichier, char * pseudo, int score){
     struct tm *info = localtime(&moment);
     strftime(buffer, sizeof(buffer), "%d/%m/%Y à %H:%M:%S", info);
 
-	fprintf(f, "%s à fait %d le %s\n", pseudo, score, buffer);
+	fprintf(f, "%s à fait %d le %s sur la graine %d\n", pseudo, score, buffer, graine);
     fclose(f);
 }

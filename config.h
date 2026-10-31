@@ -29,6 +29,7 @@ extern pthread_mutex_t dmutexjoueur2;
 
 #define SCOREFRUIT 10
 #define SCOREFRUITSPECIAL 50
+
 #pragma endregion
 
 // ===================== ENTITE =====================
@@ -69,6 +70,13 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 #define NOMBRERETOURCLEAN 15
 
 #define FREQAFFICHAGE 2 //image par sec
+#pragma endregion
+
+#pragma region FICHIER
+
+#define CHEMINTERRAIN "plateau.txt"
+#define CHEMINSCORE "scores.txt"
+
 #pragma endregion
 
 #endif
