@@ -2,10 +2,10 @@
 
 #include "view.h"
 
-void affichage(int** tableau, int largeur, int longeur, entite* listEntite[NOMBREMAXENTITE], int nombreEntite){
+void affichage(terrain * terrain, entite* listEntite[NOMBREMAXENTITE], int nombreEntite){
     //Affichage du terrain et des entites dans le terminal
-    for (int i = 0; i < largeur; i++){
-        for (int j = 0; j < longeur; j++){
+    for (int i = 0; i < terrain->largeur; i++){
+        for (int j = 0; j < terrain->longueur; j++){
 
             //CaseVide permet de suivre si une entité a été affichée
             bool caseVide = true;
@@ -26,17 +26,17 @@ void affichage(int** tableau, int largeur, int longeur, entite* listEntite[NOMBR
             }
 
             //Sinon on dessine le terrain
-            if (tableau[i][j] == VIDE){
+            if (terrain->tableau[i][j] == VIDE){
                 printf("%c", CHARVIDE);
-            } else if (tableau[i][j] == MUR){
+            } else if (terrain->tableau[i][j] == MUR){
                 printf("%c", CHARMURS);
-            } else if (tableau[i][j] == OBSTACLE){
+            } else if (terrain->tableau[i][j] == OBSTACLE){
                 printf("%c", CHAROBSTACLES);
-            } else if (tableau[i][j] == FRUIT){
+            } else if (terrain->tableau[i][j] == FRUIT){
                 printf("%c", CHARFRUITS);
-            } else if (tableau[i][j] == FRUITSPECIAL){
+            } else if (terrain->tableau[i][j] == FRUITSPECIAL){
                 printf("%c", CHARFRUITSPECIAL);
-            } else if (tableau[i][j] > 0) {
+            } else if (terrain->tableau[i][j] > 0) {
                 printf("%c", CHARSERPENT);
             }
         }

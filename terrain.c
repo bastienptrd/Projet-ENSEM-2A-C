@@ -1,46 +1,48 @@
 #include "terrain.h"
 
-int** creerTerrain(int largeur, int longeur){
+terrain * creerTerrain(int largeur, int longeur){
+    terrain * terrain = malloc(sizeof(terrain));
     //Créer le tableau du terrain
-    int ** tableau = malloc(sizeof(int*) * largeur);
+    terrain->tableau = malloc(sizeof(int*) * largeur);
     for (int i = 0; i < largeur; i++){
-        tableau[i] = malloc(sizeof(int) * longeur);
+        terrain->tableau[i] = malloc(sizeof(int) * longeur);
     }
-    return tableau;
+    terrain->largeur = largeur;
+    terrain->longueur = longeur;
+    return terrain;
 }
 
-void initTerrain(int ** tableau, int largeur, int longeur){
+void initTerrain(terrain * terrain){
     //Place des murs sur toutes les cotés
-    for (int i = 0; i < largeur; i++){
-        for (int j = 0; j < longeur; j++){
-            if (i == 0 || j == 0 || i == largeur - 1 || j == longeur - 1){
-                tableau[i][j] = MUR;
+    for (int i = 0; i < terrain->largeur; i++){
+        for (int j = 0; j < terrain->longueur; j++){
+            if (i == 0 || j == 0 || i == terrain->largeur - 1 || j == terrain->longueur - 1){
+                terrain->tableau[i][j] = MUR;
             } else {
-                tableau[i][j] = VIDE;
+                terrain->tableau[i][j] = VIDE;
             }
         }
     }
 }
 
-void ajouterClasseTerrain(int ** tableau, int largeur, int longueur, int num, int val){
-    for (int i = 0; i < largeur; i++){
-        for (int j = 0; j < longueur; j++){
-            printf("%d, %d (%d, %d)\n", tableau[i][j] / (num * CLASSESERPENT) == 1, tableau[i][j], i, j);
-            if (tableau[i][j] / (num * CLASSESERPENT) == 1){
-                tableau[i][j] += val;
-                if (tableau[i][j] % CLASSESERPENT == 0){
-                    tableau[i][j] = VIDE;
+void ajouterClasseTerrain(terrain * terrain, int num, int val){
+    for (int i = 0; i < terrain->largeur; i++){
+        for (int j = 0; j < terrain->longueur; j++){
+            if (terrain->tableau[i][j] / (num * CLASSESERPENT) == 1){
+                terrain->tableau[i][j] += val;
+                if (terrain->tableau[i][j] % CLASSESERPENT == 0){
+                    terrain->tableau[i][j] = VIDE;
                 }
             }
         }
     }
 }
 
-int nombreCaseObj(int ** tableau, int largeur, int longueur, int obj){
+int nombreCaseObj(terrain * terrain, int obj){
     int somme = 0;
-    for (int i = 0; i < largeur; i++){
-        for (int j = 0; j < longueur; j++){
-            if (tableau[i][j] == obj){
+    for (int i = 0; i < terrain->largeur; i++){
+        for (int j = 0; j < terrain->longueur; j++){
+            if (terrain->tableau[i][j] == obj){
                 somme++;
             }
         }
@@ -48,9 +50,9 @@ int nombreCaseObj(int ** tableau, int largeur, int longueur, int obj){
     return somme;
 }
 
-void ajouterAleatoireTerrain(int ** tableau, int largeur, int longueur, int nombre, int obj, int* posX, int* posY){
+void ajouterAleatoireTerrain(terrain * terrain, int nombre, int obj, int* posX, int* posY){
     for (int k = 0; k < nombre; k++){
-        int nombreCaseVide = nombreCaseObj(tableau, largeur, longueur, VIDE);
+        int nombreCaseVide = nombreCaseObj(terrain, VIDE);
 
         //Test de cas impossible
         if (nombreCaseVide == 0){
@@ -59,11 +61,11 @@ void ajouterAleatoireTerrain(int ** tableau, int largeur, int longueur, int nomb
         }
 
         int indexCase = rand() % nombreCaseVide;
-        for (int i = 0; i < largeur; i++){
-            for (int j = 0; j < longueur; j++){
-                if (tableau[i][j] == VIDE && indexCase >= 0){
+        for (int i = 0; i < terrain->largeur; i++){
+            for (int j = 0; j < terrain->longueur; j++){
+                if (terrain->tableau[i][j] == VIDE && indexCase >= 0){
                     if (indexCase == 0){
-                        tableau[i][j] = obj;
+                        terrain->tableau[i][j] = obj;
                         if (posX != NULL){
                             *posX = i;
                             *posY = j;
@@ -76,10 +78,11 @@ void ajouterAleatoireTerrain(int ** tableau, int largeur, int longueur, int nomb
     }
 }
 
-void freeTerrain(int ** tableau, int largeur){
+void freeTerrain(terrain * terrain){
     //Libération en mémoire du terrain
-    for (int i = 0; i < largeur; i++){
-        free(tableau[i]);
+    for (int i = 0; i < terrain->largeur; i++){
+        free(terrain->tableau[i]);
     }
-    free(tableau);
+    free(terrain->tableau);
+    free(terrain);
 }

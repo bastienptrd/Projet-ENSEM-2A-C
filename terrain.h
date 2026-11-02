@@ -1,8 +1,14 @@
 #include "entite.h"
 
-int** creerTerrain(int largeur, int longeur);    //Créer le tableau du terrain
-void initTerrain(int ** tableau, int largeur, int longeur);    //Place des murs sur toutes les cotés
-void ajouterClasseTerrain(int ** tableau, int largeur, int longeur, int num, int val);
-int nombreCaseObj(int ** tableau, int largeur, int longueur, int obj);
-void ajouterAleatoireTerrain(int ** tableau, int largeur, int longueur, int nombre, int obj, int* posX, int* posY);
-void freeTerrain(int ** tableau, int largeur);    //Libération en mémoire du terrain
+typedef struct {
+    int ** tableau;
+    int largeur;
+    int longueur;
+} terrain;
+
+terrain * creerTerrain(int largeur, int longeur);    //Créer le tableau du terrain
+void initTerrain(terrain * terrain);    //Place des murs sur toutes les cotés
+void ajouterClasseTerrain(terrain * terrain, int num, int val); //Ajoute val aux serpents dont la classe est num
+int nombreCaseObj(terrain * terrain, int obj);  //Renvoie le nombre de case ayant obj pour valeur
+void ajouterAleatoireTerrain(terrain * terrain, int nombre, int obj, int* posX, int* posY);
+void freeTerrain(terrain * terrain);    //Libération en mémoire du terrain

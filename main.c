@@ -54,9 +54,12 @@ int main(){
     int scoreFruitSpecial = SCOREFRUITSPECIAL;
 
     //initialisation terrain
-    //int** terrain = creerTerrain(largeur, longueur);
-    //initTerrain(terrain, largeur, longueur);
-    int ** terrain = lireTerrain(CHEMINTERRAIN, &largeur, &longueur);
+    //terrain * terrain = creerTerrain(largeur, longueur);
+    //initTerrain(terrain);
+    terrain * terrain = malloc(sizeof(terrain));
+    terrain->tableau = lireTerrain(CHEMINTERRAIN, &largeur, &longueur);
+    terrain->largeur = largeur;
+    terrain->longueur = longueur;
 
     //Initialisation du random
     int graine = time(NULL);
@@ -66,14 +69,14 @@ int main(){
     srand(graine);
 
     //Ajout des murs
-    ajouterAleatoireTerrain(terrain, largeur, longueur, nombreMur, OBSTACLE, NULL, NULL);
+    ajouterAleatoireTerrain(terrain, nombreMur, OBSTACLE, NULL, NULL);
 
     //Ajout des serpents
     for (int i = 0; i < nombreEntite; i++){
         //Ajouter le serpent (nécessite 2 case vide)
         int nombreEssai = 0;
         do {
-            ajouterAleatoireTerrain(terrain, largeur, longueur, 1, VIDE, &(listEntite[i]->posX), &(listEntite[i]->posY));
+            ajouterAleatoireTerrain(terrain, 1, VIDE, &(listEntite[i]->posX), &(listEntite[i]->posY));
             
             //Bloquer en cas de situation bloquante pour la position du seprent
             nombreEssai++;
@@ -82,18 +85,14 @@ int main(){
                 return 1;
             }
 
-        } while (terrain[listEntite[i]->posX][listEntite[i]->posY] != VIDE || caseSuivante(listEntite[i], terrain) != VIDE);
+        } while (terrain->tableau[listEntite[i]->posX][listEntite[i]->posY] != VIDE || caseSuivante(listEntite[i], terrain->tableau) != VIDE);
         
-        terrain[listEntite[i]->posX][listEntite[i]->posY] = FRUIT; //Empeche la génération en la position du joueur
+        terrain->tableau[listEntite[i]->posX][listEntite[i]->posY] = listEntite[i]->longueur + CLASSESERPENT * listEntite[i]->num; 
     }
     
     //Ajout des fruits
-    ajouterAleatoireTerrain(terrain, largeur, longueur, nombreFruit, FRUIT, NULL, NULL);
+    ajouterAleatoireTerrain(terrain, nombreFruit, FRUIT, NULL, NULL);
     
-    //Nettoyage
-    for (int i = 0; i < nombreEntite; i++){
-        terrain[listEntite[i]->posX][listEntite[i]->posY] = VIDE; //Empeche la génération en la position du joueur
-    }
     #pragma endregion
     
     //Variables fruit spécial
@@ -151,7 +150,7 @@ int main(){
         char message[5];
         sprintf(message, "%d", i);
         printfLongueur(message, longueur, '=');
-        affichage(terrain, largeur, longueur, listEntite, nombreEntite);
+        affichage(terrain, listEntite, nombreEntite);
         sleep(2);
     }
 
@@ -177,7 +176,7 @@ int main(){
             pthread_mutex_lock(listMutex + i);
 
             //On regarde la prochaine case atteinte par le serpent
-            int caseDirection = caseSuivante(listEntite[i], terrain);
+            int caseDirection = caseSuivante(listEntite[i], terrain->tableau);
 
             //Si c'est un obstacle
             if (caseDirection > CLASSESERPENT || caseDirection == MUR || caseDirection == OBSTACLE){
@@ -189,23 +188,24 @@ int main(){
 
             //Si la case n'est pas "solide"
             //On "déplace" le corps du serpent
-            ajouterClasseTerrain(terrain, largeur, longueur, listEntite[i]->num, -1);
+            ajouterClasseTerrain(terrain, listEntite[i]->num, -1);
 
             //Si on rencontre un fruit on agrandit le serpent et on fait évoluer le score
             if (caseDirection == FRUIT){
                 evolutionScore[i] = scoreFruit;
                 nombreFruitMange[i]++;
-                ajouterClasseTerrain(terrain, largeur, longueur, listEntite[i]->num, tailleAjouterFruit);
+                ajouterClasseTerrain(terrain, listEntite[i]->num, tailleAjouterFruit);
                 listEntite[i]->longueur++;
 
                 if (fruitInfinie){
                     //On rajoute un fruit sur le terrain
-                    ajouterAleatoireTerrain(terrain, largeur, longueur, nombreFruitAjouter, FRUIT, NULL, NULL); 
+                    ajouterAleatoireTerrain(terrain, nombreFruitAjouter, FRUIT, NULL, NULL);
+                    nombreFruit++;
                 }
             } else if (caseDirection == FRUITSPECIAL){
                 evolutionScore[i] = scoreFruitSpecial;
                 nombreFruitSpecialMange[i]++;
-                ajouterClasseTerrain(terrain, largeur, longueur, listEntite[i]->num, tailleAjouterFruitSpecial);
+                ajouterClasseTerrain(terrain, listEntite[i]->num, tailleAjouterFruitSpecial);
                 listEntite[i]->longueur++;
                 tempApparition = -1;
             }
@@ -213,13 +213,12 @@ int main(){
             //On déplace la tête
             deplacerDirection(listEntite[i]);
 
-            //On pose une partie du corp du serpent
-            terrain[listEntite[i]->posX][listEntite[i]->posY] = listEntite[i]->longueur + CLASSESERPENT * listEntite[i]->num;
+            pthread_mutex_unlock(listMutex + i);
 
+            //On pose une partie du corp du serpent
+            terrain->tableau[listEntite[i]->posX][listEntite[i]->posY] = listEntite[i]->longueur + CLASSESERPENT * listEntite[i]->num;
 
             distanceParcouru[i]++;
-
-            pthread_mutex_unlock(listMutex + i); 
         }
         #pragma endregion
 
@@ -227,9 +226,9 @@ int main(){
         //On fait les tests sur le fruit spécial
         if (tempApparition == -1 && rand() % FREQAPPARITIONFRUITSPECIAL * FREQDEPLACEMENT == 0){
             tempApparition = time(NULL);
-            ajouterAleatoireTerrain(terrain, largeur, longueur, 1, FRUITSPECIAL, &posFruitSpecialX, &posFruitSpecialY);
+            ajouterAleatoireTerrain(terrain, 1, FRUITSPECIAL, &posFruitSpecialX, &posFruitSpecialY);
         } else if (tempApparition != -1 && difftime(time(NULL), tempApparition) > TEMPAPPARITIONFRUITSPECIAL){
-            terrain[posFruitSpecialX][posFruitSpecialY] = VIDE;
+            terrain->tableau[posFruitSpecialX][posFruitSpecialY] = VIDE;
             tempApparition = -1;
         }
         #pragma endregion
@@ -244,7 +243,7 @@ int main(){
             }
             printf("\n");
         }
-        affichage(terrain, largeur, longueur, listEntite, nombreEntite);
+        affichage(terrain, listEntite, nombreEntite);
         #pragma endregion
 
         #pragma region SCORE
@@ -257,13 +256,16 @@ int main(){
 
         #pragma region TESTS FIN
         //Test fin de partie
+        //Si on a mangé tout les fruits
         if (nombreFruit <= somme(nombreFruitMange, nombreEntite)){
             launched = false;
         }
+        //Si plus aucun joueur est en vie
         if (nombreJoueurEnVie == 0){
             launched = false;
         }
-        if (nombreCaseObj(terrain, largeur, longueur, VIDE) == 0){
+        //Si toutes les cases sont occupées par des objets solides
+        if (nombreCaseObj(terrain, VIDE) + nombreCaseObj(terrain, FRUIT) + nombreCaseObj(terrain, FRUITSPECIAL) == 0){
             launched = false;
         }
         #pragma endregion
@@ -294,7 +296,7 @@ int main(){
         printfLongueur("Victoire", longueur, '=');
     }
 
-    //Affichage du message de fin
+    //Affichage du message de fin avec stats
     for (int i = 0; i < nombreEntite; i++){
         printf("Joueur : %s\n", pseudo[i]);
         afficherFin(score[i], listEntite[i]->longueur, nombreFruitMange[i], nombreFruitSpecialMange[i], distanceParcouru[i]);
@@ -316,7 +318,7 @@ int main(){
 
     //On rend la mémoire allouée
     //Le terrain
-    freeTerrain(terrain, largeur);
+    freeTerrain(terrain);
     //Les entités
     for (int i = 0; i < nombreEntite; i++){
         free(listEntite[i]);
