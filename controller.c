@@ -31,16 +31,16 @@ void *lireClavier(void *arg)
 
         if (c != EOF) {
             pthread_mutex_lock(&dmutexjoueur1);
-            if (c == 'z' && ent->direction != BAS){
+            if (c == TOUCHEHAUT && ent->direction != BAS){
                 ent->direction = HAUT;
             }
-            else if (c == 's' && ent->direction != HAUT){
+            else if (c == TOUCHEBAS && ent->direction != HAUT){
                 ent->direction = BAS;
             }
-            else if (c == 'd' && ent->direction != GAUCHE){
+            else if (c == TOUCHEDROITE && ent->direction != GAUCHE){
                 ent->direction = DROITE;
             }
-            else if (c == 'q' && ent->direction != DROITE){
+            else if (c == TOUCHEGAUCHE && ent->direction != DROITE){
                 ent->direction = GAUCHE;
             }
             pthread_mutex_unlock(&dmutexjoueur1);

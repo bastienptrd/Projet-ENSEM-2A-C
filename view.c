@@ -37,7 +37,7 @@ void affichage(int** tableau, int largeur, int longeur, entite* listEntite[NOMBR
             } else if (tableau[i][j] == FRUITSPECIAL){
                 printf("%c", CHARFRUITSPECIAL);
             } else if (tableau[i][j] > 0) {
-                printf("o");
+                printf("%c", CHARSERPENT);
             }
         }
         printf("\n");
