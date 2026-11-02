@@ -59,6 +59,8 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 //Nombre d'essai de placement des serpents avant crash
 #define NOMBREEESSAIMAX 10000
 
+#define TAILLEMAXPSEUDO 20
+
 #pragma endregion
 
 #pragma region AFFICHAGE
@@ -73,6 +75,9 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 
 //Nombre de retour à la ligne pour "effacer" l'affichage précédent
 #define NOMBRERETOURCLEAN 15
+
+#define NOMBREDECOMPTE 3
+#define TEMPSCHIFFREDECOMPTE 2
 
 //Nombre image par seconde de l'affichage et du déplacement
 #define FREQDEPLACEMENT 2 

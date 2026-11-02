@@ -109,10 +109,10 @@ int main(){
 
     int distanceParcouru[NOMBREMAXENTITE] = { 0 };
 
-    char pseudo[NOMBREMAXENTITE][20];
+    char pseudo[NOMBREMAXENTITE][TAILLEMAXPSEUDO];
     for (int i = 0; i < nombreEntite; i++){
         printf("Entrez pseudo joueur %d :", listEntite[i]->num);
-        scanf("%19s", pseudo[i]);
+        scanf("%s", pseudo[i]);
     }
     
     //Création argument thread
@@ -129,7 +129,6 @@ int main(){
     bool launched = true;
 
     #pragma endregion
-
     
     initialiserTerminal();
 
@@ -139,20 +138,13 @@ int main(){
     //Recuperation des entrées clavier
     pthread_create(&clavier,NULL,lireClavier,&ensembleJoueur);
 
-    //Selectionne aucune direction de sorte à ce que je joueur puisse choisir nimporte laquelle
+    //Selectionne aucune direction de sorte à ce que le joueur puisse choisir nimporte laquelle
     for (int i = 0; i < nombreEntite; i++){
         listEntite[i]->direction = DIRECTIONINITIALESERPENT;
     }
 
     //Decompte vers le début
-    for (int i = 3; i > 0; i--){
-        clearAffichage();
-        char message[5];
-        sprintf(message, "%d", i);
-        printfLongueur(message, longueur, '=');
-        affichage(terrain, listEntite, nombreEntite);
-        sleep(2);
-    }
+    afficherDecompte(terrain, listEntite, nombreEntite);
 
     //Si le joueur n'a pas choisi de direction on remet alors celle de default
     for (int i = 0; i < nombreEntite; i++){
@@ -234,16 +226,7 @@ int main(){
         #pragma endregion
 
         #pragma region AFFICHAGE
-        //Affichage
-        clearAffichage();
-        for (int i = 0; i < nombreEntite; i++){
-            printf("Score %s : %d", pseudo[i], score[i]);
-            if (evolutionScore[i] > 0){
-                printf(" + %d", evolutionScore[i]);
-            }
-            printf("\n");
-        }
-        affichage(terrain, listEntite, nombreEntite);
+        afficherPartie(terrain, listEntite, pseudo, nombreEntite, score, evolutionScore);
         #pragma endregion
 
         #pragma region SCORE
@@ -276,31 +259,7 @@ int main(){
 
     #pragma region AFFICHAGE FIN
     //Affichage vainqueur
-    if (nombreJoueurEnVie == 0 && nombreEntite >= 2){
-        printfLongueur("Partie nulle", longueur, '=');
-    } else if (nombreEntite >= 2){
-        int vainqueur = 0;
-        int scoreMax = score[0];
-        for (int i = 1; i < nombreEntite; i++){
-            if (score[i] > scoreMax){
-                scoreMax = score[i];
-                vainqueur = listEntite[i]->num;
-            }
-        }
-        char message[30];
-        sprintf(message, "%s gagne", pseudo[vainqueur - 1]);
-        printfLongueur(message, longueur, '=');
-    } else if (nombreJoueurEnVie == 0){
-        printfLongueur("Défaite", longueur, '=');
-    } else {
-        printfLongueur("Victoire", longueur, '=');
-    }
-
-    //Affichage du message de fin avec stats
-    for (int i = 0; i < nombreEntite; i++){
-        printf("Joueur : %s\n", pseudo[i]);
-        afficherFin(score[i], listEntite[i]->longueur, nombreFruitMange[i], nombreFruitSpecialMange[i], distanceParcouru[i]);
-    }
+    afficherFin(terrain->longueur, nombreJoueurEnVie, listEntite, nombreEntite, pseudo, score, nombreFruitMange, nombreFruitSpecialMange, distanceParcouru);
     #pragma endregion
 
     #pragma region GESTION FICHIER
