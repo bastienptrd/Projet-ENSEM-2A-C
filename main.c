@@ -38,11 +38,11 @@ int main(){
     #pragma endregion
 
     #pragma region INITIALISATION TERRAIN
-    int largeur = LARGEURTERRAIN; //permettra de faire des tailles variables par la suite
-    int longueur = LONGEURTERRAIN; //permettra de faire des tailles variables par la suite
+    int largeur = LARGEURTERRAIN;
+    int longueur = LONGEURTERRAIN;
 
-    int nombreMur = NOMBREMUR; //permettra de faire des nombres variables par la suite
-    int nombreFruit = NOMBREFRUIT; //permettra de faire des nombres variables par la suite
+    int nombreMur = NOMBREMUR;
+    int nombreFruit = NOMBREFRUIT;
 
     bool fruitInfinie = FRUITINFINIE;
     int nombreFruitAjouter = NOMBREFRUITAJOUTER;
@@ -191,9 +191,6 @@ int main(){
             //On "déplace" le corps du serpent
             ajouterClasseTerrain(terrain, largeur, longueur, listEntite[i]->num, -1);
 
-            //On pose une partie du corp du serpent
-            terrain[listEntite[i]->posX][listEntite[i]->posY] = listEntite[i]->longueur - 1 + CLASSESERPENT * listEntite[i]->num;
-
             //Si on rencontre un fruit on agrandit le serpent et on fait évoluer le score
             if (caseDirection == FRUIT){
                 evolutionScore[i] = scoreFruit;
@@ -215,6 +212,10 @@ int main(){
 
             //On déplace la tête
             deplacerDirection(listEntite[i]);
+
+            //On pose une partie du corp du serpent
+            terrain[listEntite[i]->posX][listEntite[i]->posY] = listEntite[i]->longueur + CLASSESERPENT * listEntite[i]->num;
+
 
             distanceParcouru[i]++;
 
