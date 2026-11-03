@@ -4,16 +4,24 @@
 #include "config.h"
 
 typedef struct{
+    char pseudo[TAILLE_MAX_PSEUDO];
+    int num;
+    bool enVie;
+
     int posX;
     int posY;
     int direction;
-    char nom;
-    int num;
+    
+    int score;
+    int evolutionScore;
+
     int longueur;
-    bool enVie;
+    int distanceParcourue;
+    int nombreFruitMange;
+    int nombreFruitSpecialMange;
 } entite;
 
-entite * creerEntite(int posX, int posY, int direction, char nom, int num, int longueur); //Constructeur d'entite
+entite * creerEntite(int num);
 int caseSuivante(entite * ent, int ** terrain);
 void deplacerDirection(entite * ent);
 void freeEntite(entite * ent);

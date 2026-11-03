@@ -2,7 +2,7 @@
 
 //Fait par IA
 static struct termios ancienTerminal;
-
+//Fait par IA
 void initialiserTerminal(void)
 {
     struct termios nouveauTerminal;
@@ -20,10 +20,12 @@ void restaurerTerminal(void)
     tcsetattr(STDIN_FILENO, TCSANOW, &ancienTerminal);
 }
 
+//Récupère les entrées clavier
 void *lireClavier(void *arg)
 {
     entites * ents = arg;
-    entite * ent = ents->listEntite[0];
+    entite * joueur1 = ents->listEntite[0];
+    entite * joueur2 = ents->listEntite[1];
     char c;
 
     while (1) {
@@ -31,17 +33,17 @@ void *lireClavier(void *arg)
 
         if (c != EOF) {
             pthread_mutex_lock(&dmutexjoueur1);
-            if (c == 'z' && ent->direction != BAS){
-                ent->direction = HAUT;
+            if (c == TOUCHE_HAUT && (joueur1->direction != BAS || ents->pass)){
+                joueur1->direction = HAUT;
             }
-            else if (c == 's' && ent->direction != HAUT){
-                ent->direction = BAS;
+            else if (c == TOUCHE_BAS && (joueur1->direction != HAUT || ents->pass)){
+                joueur1->direction = BAS;
             }
-            else if (c == 'd' && ent->direction != GAUCHE){
-                ent->direction = DROITE;
+            else if (c == TOUCHE_DROITE && (joueur1->direction != GAUCHE || ents->pass)){
+                joueur1->direction = DROITE;
             }
-            else if (c == 'q' && ent->direction != DROITE){
-                ent->direction = GAUCHE;
+            else if (c == TOUCHE_GAUCHE && (joueur1->direction != DROITE || ents->pass)){
+                joueur1->direction = GAUCHE;
             }
             pthread_mutex_unlock(&dmutexjoueur1);
 
@@ -53,26 +55,27 @@ void *lireClavier(void *arg)
             if (c == 27){
                 getchar();
                 c = getchar();
+            } else {
+                continue;
             }
             pthread_mutex_lock(&dmutexjoueur2);
 
-            if (c == 'A' && ents->listEntite[1]->direction != BAS){
-                ents->listEntite[1]->direction = HAUT;
+            if (c == 'A' && (joueur2->direction != BAS || ents->pass)){
+                joueur2->direction = HAUT;
             }
-            else if (c == 'B' && ents->listEntite[1]->direction != HAUT){
-                ents->listEntite[1]->direction = BAS;
+            else if (c == 'B' && (joueur2->direction != HAUT || ents->pass)){
+                joueur2->direction = BAS;
             }
-            else if (c == 'C' && ents->listEntite[1]->direction != GAUCHE){
-                ents->listEntite[1]->direction = DROITE;
+            else if (c == 'C' && (joueur2->direction != GAUCHE || ents->pass)){
+                joueur2->direction = DROITE;
             }
-            else if (c == 'D' && ents->listEntite[1]->direction != DROITE){
-                ents->listEntite[1]->direction = GAUCHE;
+            else if (c == 'D' && (joueur2->direction != DROITE || ents->pass)){
+                joueur2->direction = GAUCHE;
             }
             pthread_mutex_unlock(&dmutexjoueur2);
 
         }
 
-        usleep(1000000 / FREQCLAVIER);
+        usleep(1000000 / FREQ_CLAVIER);
     }
-    return NULL;
 }
