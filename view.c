@@ -2,7 +2,7 @@
 
 #include "view.h"
 
-void affichageTerrain(terrain * terrain, entite* listEntite[NOMBREMAXENTITE], int nombreEntite){
+void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     //Affichage du terrain et des entites dans le terminal
     for (int i = 0; i < terrain->largeur; i++){
         for (int j = 0; j < terrain->longueur; j++){
@@ -27,17 +27,17 @@ void affichageTerrain(terrain * terrain, entite* listEntite[NOMBREMAXENTITE], in
 
             //Sinon on dessine le terrain
             if (terrain->tableau[i][j] == VIDE){
-                printf("%c", CHARVIDE);
+                printf("%c", CHAR_VIDE);
             } else if (terrain->tableau[i][j] == MUR){
-                printf("%c", CHARMURS);
+                printf("%c", CHAR_MURS);
             } else if (terrain->tableau[i][j] == OBSTACLE){
-                printf("%c", CHAROBSTACLES);
+                printf("%c", CHAR_OBSTACLES);
             } else if (terrain->tableau[i][j] == FRUIT){
-                printf("%c", CHARFRUITS);
-            } else if (terrain->tableau[i][j] == FRUITSPECIAL){
-                printf("%c", CHARFRUITSPECIAL);
+                printf("%c", CHAR_FRUITS);
+            } else if (terrain->tableau[i][j] == FRUIT_SPECIAL){
+                printf("%c", CHAR_FRUIT_SPECIAL);
             } else if (terrain->tableau[i][j] > 0) {
-                printf("%c", CHARSERPENT);
+                printf("%c", CHAR_SERPENT);
             }
         }
         printf("\n");
@@ -58,23 +58,23 @@ void printfLongueur(char * message, int longueur, char symb){
 
 void clearAffichage(){
     //Faire de la place dans le terminal
-    for (int i = 0; i < NOMBRERETOURCLEAN; i++){
+    for (int i = 0; i < NOMBRE_RETOUR_CLEAN; i++){
         printf("\n");
     }
 }
 
-void afficherDecompte(terrain * terrain, entite * listEntite[NOMBREMAXENTITE], int nombreEntite){
-    for (int i = NOMBREDECOMPTE; i > 0; i--){
+void afficherDecompte(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
+    for (int i = NOMBRE_DECOMPTE; i > 0; i--){
         clearAffichage();
         char message[5];
         sprintf(message, "%d", i);
         printfLongueur(message, terrain->longueur, '=');
         affichageTerrain(terrain, listEntite, nombreEntite);
-        sleep(TEMPSCHIFFREDECOMPTE);
+        sleep(TEMPS_CHIFFRES_DECOMPTE);
     }
 }
 
-void afficherPartie(terrain * terrain, entite * listEntite[NOMBREMAXENTITE], int nombreEntite){
+void afficherPartie(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     clearAffichage();
     for (int i = 0; i < nombreEntite; i++){
         printf("Score %s : %d", listEntite[i]->pseudo, listEntite[i]->score);
@@ -86,7 +86,7 @@ void afficherPartie(terrain * terrain, entite * listEntite[NOMBREMAXENTITE], int
     affichageTerrain(terrain, listEntite, nombreEntite);
 }
 
-void afficherFin(int longueur, entite * listEntite[NOMBREMAXENTITE], int nombreEntite){
+void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     int nombreJoueurEnVie = 0;
     for (int i = 0; i < nombreEntite; i++){
         if (listEntite[i]->enVie){

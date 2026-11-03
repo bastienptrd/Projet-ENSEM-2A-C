@@ -28,7 +28,7 @@ int** lireTerrain(char *fichier, int *largeur, int* longueur){
 	while ((ch = getc(f)) != EOF) {
         if (ch != '\n') {
 			if (j < *longueur){
-				if (ch == CHARMURS) {
+				if (ch == CHAR_MURS) {
 					plateau[i][j] = MUR;
 				}else{
 					plateau[i][j] = VIDE;

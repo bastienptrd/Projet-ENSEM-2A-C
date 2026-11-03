@@ -4,7 +4,7 @@
 #include "config.h"
 
 typedef struct{
-    char pseudo[TAILLEMAXPSEUDO];
+    char pseudo[TAILLE_MAX_PSEUDO];
     int num;
     bool enVie;
 

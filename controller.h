@@ -2,10 +2,8 @@
 
 #include "entite.h"
 
-#define FREQCLAVIER 10
-
 typedef struct{
-    entite * listEntite[NOMBREMAXENTITE];
+    entite * listEntite[NOMBRE_MAX_ENTITE];
     int nombreEntite;
 } entites;
 

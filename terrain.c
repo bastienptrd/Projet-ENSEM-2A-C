@@ -28,9 +28,9 @@ void initTerrain(terrain * terrain){
 void ajouterClasseTerrain(terrain * terrain, int num, int val){
     for (int i = 0; i < terrain->largeur; i++){
         for (int j = 0; j < terrain->longueur; j++){
-            if (terrain->tableau[i][j] / (num * CLASSESERPENT) == 1){
+            if (terrain->tableau[i][j] / (num * CLASSE_SERPENT) == 1){
                 terrain->tableau[i][j] += val;
-                if (terrain->tableau[i][j] % CLASSESERPENT == 0){
+                if (terrain->tableau[i][j] % CLASSE_SERPENT == 0){
                     terrain->tableau[i][j] = VIDE;
                 }
             }

@@ -23,7 +23,8 @@ void restaurerTerminal(void)
 void *lireClavier(void *arg)
 {
     entites * ents = arg;
-    entite * ent = ents->listEntite[0];
+    entite * joueur1 = ents->listEntite[0];
+    entite * joueur2 = ents->listEntite[1];
     char c;
 
     while (1) {
@@ -31,17 +32,17 @@ void *lireClavier(void *arg)
 
         if (c != EOF) {
             pthread_mutex_lock(&dmutexjoueur1);
-            if (c == TOUCHEHAUT && ent->direction != BAS){
-                ent->direction = HAUT;
+            if (c == TOUCHE_HAUT && joueur1->direction != BAS){
+                joueur1->direction = HAUT;
             }
-            else if (c == TOUCHEBAS && ent->direction != HAUT){
-                ent->direction = BAS;
+            else if (c == TOUCHE_BAS && joueur1->direction != HAUT){
+                joueur1->direction = BAS;
             }
-            else if (c == TOUCHEDROITE && ent->direction != GAUCHE){
-                ent->direction = DROITE;
+            else if (c == TOUCHE_DROITE && joueur1->direction != GAUCHE){
+                joueur1->direction = DROITE;
             }
-            else if (c == TOUCHEGAUCHE && ent->direction != DROITE){
-                ent->direction = GAUCHE;
+            else if (c == TOUCHE_GAUCHE && joueur1->direction != DROITE){
+                joueur1->direction = GAUCHE;
             }
             pthread_mutex_unlock(&dmutexjoueur1);
 
@@ -56,23 +57,22 @@ void *lireClavier(void *arg)
             }
             pthread_mutex_lock(&dmutexjoueur2);
 
-            if (c == 'A' && ents->listEntite[1]->direction != BAS){
-                ents->listEntite[1]->direction = HAUT;
+            if (c == 'A' && joueur2->direction != BAS){
+                joueur2->direction = HAUT;
             }
-            else if (c == 'B' && ents->listEntite[1]->direction != HAUT){
-                ents->listEntite[1]->direction = BAS;
+            else if (c == 'B' && joueur2->direction != HAUT){
+                joueur2->direction = BAS;
             }
-            else if (c == 'C' && ents->listEntite[1]->direction != GAUCHE){
-                ents->listEntite[1]->direction = DROITE;
+            else if (c == 'C' && joueur2->direction != GAUCHE){
+                joueur2->direction = DROITE;
             }
-            else if (c == 'D' && ents->listEntite[1]->direction != DROITE){
-                ents->listEntite[1]->direction = GAUCHE;
+            else if (c == 'D' && joueur2->direction != DROITE){
+                joueur2->direction = GAUCHE;
             }
             pthread_mutex_unlock(&dmutexjoueur2);
 
         }
 
-        usleep(1000000 / FREQCLAVIER);
+        usleep(1000000 / FREQ_CLAVIER);
     }
-    return NULL;
 }

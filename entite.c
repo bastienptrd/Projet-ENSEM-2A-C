@@ -9,12 +9,12 @@ entite * creerEntite(int num){
 
     ent->posX = 0;
     ent->posY = 0;
-    ent->direction = DIRECTIONDEFAULTSERPENT;
+    ent->direction = DIRECTION_DEFAULT_SERPENT;
     
     ent->score = 0;
     ent->evolutionScore = 0;
 
-    ent->longueur = TAILLEINITIALESERPENT;
+    ent->longueur = TAILLE_INITIALE_SERPENT;
     ent->distanceParcourue = 0;
     ent->nombreFruitMange = 0;
     ent->nombreFruitSpecialMange = 0;

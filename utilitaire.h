@@ -1,1 +1,0 @@
-int somme(int * list, int taille);
