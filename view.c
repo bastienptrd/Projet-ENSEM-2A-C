@@ -1,7 +1,9 @@
 #include <stdio.h>
 
 #include "view.h"
+#include "utilitaire.h"
 
+//Affiche le plateau avec tous ce éléments
 void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     //Affichage du terrain et des entites dans le terminal
     for (int i = 0; i < terrain->largeur; i++){
@@ -44,6 +46,7 @@ void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], 
     }
 }
 
+//Fait un printf centré par rapport à longueur
 void printfLongueur(char * message, int longueur, char symb){
     int tailleMessage = strlen(message);
     for (int i = 0; i < (longueur - tailleMessage) / 2; i++){
@@ -53,29 +56,35 @@ void printfLongueur(char * message, int longueur, char symb){
     for (int i = 0; i < (longueur - tailleMessage) / 2; i++){
         printf("%c", symb);
     }
+    if ((longueur - tailleMessage) % 2){
+        printf("%c", symb);
+    }
     printf("\n");
 }
 
+//Fait NOMBRE_RETOUR_CLEAN retour à la ligne pour faire de la place dans le terminal
 void clearAffichage(){
-    //Faire de la place dans le terminal
     for (int i = 0; i < NOMBRE_RETOUR_CLEAN; i++){
         printf("\n");
     }
 }
 
-//Fait avec IA (txt)
+//Affiche SNAKE dans le terminal
 void afficherTitre(int longueur){
+    longueur = max(longueur, 34);
     printfLongueur("", longueur, '=');
+    //txt fait avec l'IA
     printfLongueur("  ____  _   _    _    _  _______  ", longueur, '=');
     printfLongueur(" / ___|| \\ | |  / \\  | |/ / ____| ", longueur, '=');
     printfLongueur(" \\___ \\|  \\| | / _ \\ | ' /|  _|   ", longueur, '=');
     printfLongueur("  ___) | |\\  |/ ___ \\| . \\| |___  ", longueur, '=');
     printfLongueur(" |____/|_| \\_/_/   \\_\\_|\\_\\_____| ", longueur, '=');
+
     printf("\n");
     printfLongueur("", longueur, '=');
 }
 
-
+//Affiche le moment du décompte
 void afficherDecompte(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     for (int i = NOMBRE_DECOMPTE; i > 0; i--){
         clearAffichage();
@@ -87,6 +96,7 @@ void afficherDecompte(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE],
     }
 }
 
+//Affiche tous les élément en milieu de partie
 void afficherPartie(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     clearAffichage();
     for (int i = 0; i < nombreEntite; i++){
@@ -99,6 +109,7 @@ void afficherPartie(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], i
     affichageTerrain(terrain, listEntite, nombreEntite);
 }
 
+//Affiche le message de fin
 void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     int nombreJoueurEnVie = 0;
     for (int i = 0; i < nombreEntite; i++){
@@ -127,7 +138,7 @@ void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombr
         printfLongueur(" Victoire ", longueur, '=');
     }
 
-    //Affichage du message de fin avec stats
+    //Affichage stats
     for (int i = 0; i < nombreEntite; i++){
         printf("Joueur : %s\n", listEntite[i]->pseudo);
         printf("Score : %d\n", listEntite[i]->score);

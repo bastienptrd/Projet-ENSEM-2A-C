@@ -2,7 +2,7 @@
 
 //Fait par IA
 static struct termios ancienTerminal;
-
+//Fait par IA
 void initialiserTerminal(void)
 {
     struct termios nouveauTerminal;
@@ -20,6 +20,7 @@ void restaurerTerminal(void)
     tcsetattr(STDIN_FILENO, TCSANOW, &ancienTerminal);
 }
 
+//Récupère les entrées clavier
 void *lireClavier(void *arg)
 {
     entites * ents = arg;

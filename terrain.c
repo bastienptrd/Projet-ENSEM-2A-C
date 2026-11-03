@@ -1,5 +1,6 @@
 #include "terrain.h"
 
+//Créer un terrain vide depuis une longueur et une largeur
 terrain * creerTerrain(int largeur, int longeur){
     terrain * terrain = malloc(sizeof(terrain));
     //Créer le tableau du terrain
@@ -12,6 +13,7 @@ terrain * creerTerrain(int largeur, int longeur){
     return terrain;
 }
 
+//Pose des murs sur les bords du terrain
 void initTerrain(terrain * terrain){
     //Place des murs sur toutes les cotés
     for (int i = 0; i < terrain->largeur; i++){
@@ -25,6 +27,7 @@ void initTerrain(terrain * terrain){
     }
 }
 
+//Ajoute val au case dont la classe (cf CLASSE_SERPENT) vaut num  
 void ajouterClasseTerrain(terrain * terrain, int num, int val){
     for (int i = 0; i < terrain->largeur; i++){
         for (int j = 0; j < terrain->longueur; j++){
@@ -38,6 +41,7 @@ void ajouterClasseTerrain(terrain * terrain, int num, int val){
     }
 }
 
+//Renvoie le nombre de case à la valeur obj
 int nombreCaseObj(terrain * terrain, int obj){
     int somme = 0;
     for (int i = 0; i < terrain->largeur; i++){
@@ -50,6 +54,7 @@ int nombreCaseObj(terrain * terrain, int obj){
     return somme;
 }
 
+//Ajout nombre fois de case obj aléatoirement
 void ajouterAleatoireTerrain(terrain * terrain, int nombre, int obj, int* posX, int* posY){
     for (int k = 0; k < nombre; k++){
         int nombreCaseVide = nombreCaseObj(terrain, VIDE);
@@ -78,6 +83,7 @@ void ajouterAleatoireTerrain(terrain * terrain, int nombre, int obj, int* posX, 
     }
 }
 
+//Libération mémoire de terrain
 void freeTerrain(terrain * terrain){
     //Libération en mémoire du terrain
     for (int i = 0; i < terrain->largeur; i++){

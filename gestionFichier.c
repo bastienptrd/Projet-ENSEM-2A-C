@@ -1,5 +1,6 @@
 #include "gestionFichier.h"
 
+//Lit un terrain depuis un fichier .txt
 int** lireTerrain(char *fichier, int *largeur, int* longueur){
 	FILE *f;
 	char str[10000];
@@ -43,6 +44,7 @@ int** lireTerrain(char *fichier, int *largeur, int* longueur){
     return plateau;
 }
 
+//Ecrit le blian de la partie dans un .txt
 void ecrire(char * fichier, char * pseudo, int score, int graine){
 	FILE* f = fopen(fichier,"a");
     if (f == NULL){

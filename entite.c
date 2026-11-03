@@ -1,7 +1,7 @@
 #include "entite.h"
 
+//Constructeur d'entite
 entite * creerEntite(int num){
-    //Constructeur d'entite
     entite * ent = malloc(sizeof(entite));
 
     ent->num = num;
@@ -21,6 +21,7 @@ entite * creerEntite(int num){
     return ent;
 }
 
+//Donne la case située devant l'entité
 int caseSuivante(entite * ent, int ** terrain){
     int caseObserve = 0;
     if (ent->direction == HAUT){
@@ -35,6 +36,7 @@ int caseSuivante(entite * ent, int ** terrain){
     return caseObserve;
 }
 
+//Déplace l'entité dans la direction visée
 void deplacerDirection(entite * ent){
     if (ent->direction == HAUT){
         ent->posX--;
@@ -47,6 +49,7 @@ void deplacerDirection(entite * ent){
     }
 }
 
+//Libération mémoire d'entité
 void freeEntite(entite * ent){
     free(ent);
 }

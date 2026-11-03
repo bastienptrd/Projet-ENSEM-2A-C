@@ -21,7 +21,7 @@ typedef struct{
     int nombreFruitSpecialMange;
 } entite;
 
-entite * creerEntite(int num); //Constructeur d'entite
+entite * creerEntite(int num);
 int caseSuivante(entite * ent, int ** terrain);
 void deplacerDirection(entite * ent);
 void freeEntite(entite * ent);
