@@ -46,11 +46,11 @@ void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], 
 
 void printfLongueur(char * message, int longueur, char symb){
     int tailleMessage = strlen(message);
-    for (int i = 0; i < (longueur - tailleMessage - 2) / 2; i++){
+    for (int i = 0; i < (longueur - tailleMessage) / 2; i++){
         printf("%c", symb);
     }
-    printf(" %s ", message);
-    for (int i = 0; i < (longueur - tailleMessage - 2) / 2; i++){
+    printf("%s", message);
+    for (int i = 0; i < (longueur - tailleMessage) / 2; i++){
         printf("%c", symb);
     }
     printf("\n");
@@ -63,11 +63,24 @@ void clearAffichage(){
     }
 }
 
+//Fait avec IA (txt)
+void afficherTitre(int longueur){
+    printfLongueur("", longueur, '=');
+    printfLongueur("  ____  _   _    _    _  _______  ", longueur, '=');
+    printfLongueur(" / ___|| \\ | |  / \\  | |/ / ____| ", longueur, '=');
+    printfLongueur(" \\___ \\|  \\| | / _ \\ | ' /|  _|   ", longueur, '=');
+    printfLongueur("  ___) | |\\  |/ ___ \\| . \\| |___  ", longueur, '=');
+    printfLongueur(" |____/|_| \\_/_/   \\_\\_|\\_\\_____| ", longueur, '=');
+    printf("\n");
+    printfLongueur("", longueur, '=');
+}
+
+
 void afficherDecompte(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     for (int i = NOMBRE_DECOMPTE; i > 0; i--){
         clearAffichage();
         char message[5];
-        sprintf(message, "%d", i);
+        sprintf(message, " %d ", i);
         printfLongueur(message, terrain->longueur, '=');
         affichageTerrain(terrain, listEntite, nombreEntite);
         sleep(TEMPS_CHIFFRES_DECOMPTE);
@@ -95,7 +108,7 @@ void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombr
     }
     
     if (nombreJoueurEnVie == 0 && nombreEntite >= 2){
-        printfLongueur("Partie nulle", longueur, '=');
+        printfLongueur(" Partie nulle ", longueur, '=');
     } else if (nombreEntite >= 2){
         int vainqueur = 0;
         int scoreMax = listEntite[0]->score;
@@ -106,12 +119,12 @@ void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombr
             }
         }
         char message[30];
-        sprintf(message, "%s gagne", listEntite[vainqueur]->pseudo);
+        sprintf(message, " %s gagne ", listEntite[vainqueur]->pseudo);
         printfLongueur(message, longueur, '=');
     } else if (nombreJoueurEnVie == 0){
-        printfLongueur("Défaite", longueur, '=');
+        printfLongueur(" Défaite ", longueur, '=');
     } else {
-        printfLongueur("Victoire", longueur, '=');
+        printfLongueur(" Victoire ", longueur, '=');
     }
 
     //Affichage du message de fin avec stats

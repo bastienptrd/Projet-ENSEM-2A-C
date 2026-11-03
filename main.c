@@ -100,6 +100,8 @@ int main(){
     int posFruitSpecialX;
     int posFruitSpecialY;
 
+    afficherTitre(terrain->longueur);
+
     //Entrer pseudo des joueurs
     for (int i = 0; i < nombreEntite; i++){
         printf("Entrez pseudo joueur %d :", listEntite[i]->num);
@@ -112,6 +114,7 @@ int main(){
         ensembleJoueur.listEntite[i] = listEntite[i];
     }
     ensembleJoueur.nombreEntite = nombreEntite;
+    ensembleJoueur.pass = false;
 
     //Permet d'arreter la boucle au besoin
     int nombreJoueurEnVie = nombreEntite;
@@ -129,20 +132,21 @@ int main(){
     //Recuperation des entrées clavier
     pthread_create(&clavier, NULL, lireClavier, &ensembleJoueur);
 
-    //Selectionne aucune direction de sorte à ce que le joueur puisse choisir nimporte laquelle
+    //Selectionne une direction
     for (int i = 0; i < nombreEntite; i++){
-        listEntite[i]->direction = DIRECTION_INITIALE_SERPENT;
+        listEntite[i]->direction = DIRECTION_DEFAULT_SERPENT;
     }
+
+    //Autorise les joueur à changer librement de direction avant le début
+    ensembleJoueur.pass = true;
 
     //Decompte vers le début
     afficherDecompte(terrain, listEntite, nombreEntite);
 
-    //Si le joueur n'a pas choisi de direction on remet alors celle de default est choisi
-    for (int i = 0; i < nombreEntite; i++){
-        if (listEntite[i]->direction == DIRECTION_INITIALE_SERPENT){
-            listEntite[i]->direction = DIRECTION_DEFAULT_SERPENT;
-        }
-    }
+    //Retire l'autorisation du changement libre
+    ensembleJoueur.pass = false;
+
+
 
     //Boucle principale
     while (launched){

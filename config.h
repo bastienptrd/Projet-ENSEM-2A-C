@@ -38,7 +38,7 @@ extern pthread_mutex_t dmutexjoueur2;
 enum direction {HAUT,BAS,GAUCHE,DROITE};
 
 #define NOMBRE_MUR 10
-#define NOMBRE_FRUIT 5
+#define NOMBRE_FRUIT 20
 #define NOMBRE_MAX_ENTITE 2 // 2 serpents
 
 #define FREQ_APPARITION_FRUIT_SPECIAL 50

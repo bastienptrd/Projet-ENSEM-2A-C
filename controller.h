@@ -5,6 +5,7 @@
 typedef struct{
     entite * listEntite[NOMBRE_MAX_ENTITE];
     int nombreEntite;
+    bool pass;
 } entites;
 
 //Fait par IA

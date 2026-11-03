@@ -32,16 +32,16 @@ void *lireClavier(void *arg)
 
         if (c != EOF) {
             pthread_mutex_lock(&dmutexjoueur1);
-            if (c == TOUCHE_HAUT && joueur1->direction != BAS){
+            if (c == TOUCHE_HAUT && (joueur1->direction != BAS || ents->pass)){
                 joueur1->direction = HAUT;
             }
-            else if (c == TOUCHE_BAS && joueur1->direction != HAUT){
+            else if (c == TOUCHE_BAS && (joueur1->direction != HAUT || ents->pass)){
                 joueur1->direction = BAS;
             }
-            else if (c == TOUCHE_DROITE && joueur1->direction != GAUCHE){
+            else if (c == TOUCHE_DROITE && (joueur1->direction != GAUCHE || ents->pass)){
                 joueur1->direction = DROITE;
             }
-            else if (c == TOUCHE_GAUCHE && joueur1->direction != DROITE){
+            else if (c == TOUCHE_GAUCHE && (joueur1->direction != DROITE || ents->pass)){
                 joueur1->direction = GAUCHE;
             }
             pthread_mutex_unlock(&dmutexjoueur1);
@@ -54,19 +54,21 @@ void *lireClavier(void *arg)
             if (c == 27){
                 getchar();
                 c = getchar();
+            } else {
+                continue;
             }
             pthread_mutex_lock(&dmutexjoueur2);
 
-            if (c == 'A' && joueur2->direction != BAS){
+            if (c == 'A' && (joueur2->direction != BAS || ents->pass)){
                 joueur2->direction = HAUT;
             }
-            else if (c == 'B' && joueur2->direction != HAUT){
+            else if (c == 'B' && (joueur2->direction != HAUT || ents->pass)){
                 joueur2->direction = BAS;
             }
-            else if (c == 'C' && joueur2->direction != GAUCHE){
+            else if (c == 'C' && (joueur2->direction != GAUCHE || ents->pass)){
                 joueur2->direction = DROITE;
             }
-            else if (c == 'D' && joueur2->direction != DROITE){
+            else if (c == 'D' && (joueur2->direction != DROITE || ents->pass)){
                 joueur2->direction = GAUCHE;
             }
             pthread_mutex_unlock(&dmutexjoueur2);
