@@ -2,16 +2,22 @@
 # Compilateur et options
 CC = gcc
 CFLAGS = -Wall -Wextra -g
+CPPFLAGS = -Iinclude
+LDFLAGS =
+LDLIBS =
 
 # Nom de l'exécutable
 EXEC = snake
 
-# Dossier de compilation
+# Dossiers
+SRC_DIR = src
+INCLUDE_DIR = include
 BUILD_DIR = build
+ASSETS_DIR = assets
 
 # Fichiers sources, objets et dépendances
-SRC = $(wildcard *.c)
-OBJ = $(SRC:%.c=$(BUILD_DIR)/%.o)
+SRC = $(wildcard $(SRC_DIR)/*.c)
+OBJ = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)
 
 # Cibles
@@ -28,7 +34,7 @@ $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
 # Compilation des fichiers .c en fichiers .o
-$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
 
 # Chargement des dépendances des fichiers .h
@@ -40,7 +46,7 @@ run: $(EXEC)
 
 # Suppression des objets et dépendances
 clean:
-	rm -f $(OBJ) $(DEP)
+	rm -rf $(BUILD_DIR)
 
 # Nettoyage complet
 mrproper: clean
