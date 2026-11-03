@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include "view.h"
-#include "controller.h"
-#include "gestionFichier.h"
+#include "../include/view.h"
+#include "../include/controller.h"
+#include "../include/gestionFichier.h"
 
 pthread_mutex_t dmutexjoueur1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t dmutexjoueur2 = PTHREAD_MUTEX_INITIALIZER;

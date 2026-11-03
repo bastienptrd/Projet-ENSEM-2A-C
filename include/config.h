@@ -86,8 +86,9 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 
 #pragma region FICHIER
 
+
 //Noms des fichiers
-#define CHEMIN_TERRAIN "plateauVide.txt"
+#define CHEMIN_TERRAIN "assets/terrain/plateauVide.txt"
 #define CHEMIN_SCORE "scores.txt"
 
 #pragma endregion
