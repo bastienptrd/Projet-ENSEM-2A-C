@@ -24,11 +24,11 @@ int main(){
 
     int nombreEntite = 0;
 
-    entite * joueur1 = creerEntite(0, 0, DIRECTIONDEFAULTSERPENT, '1', nombreEntite + 1, TAILLEINITIALESERPENT);
+    entite * joueur1 = creerEntite(nombreEntite + 1);
     listEntite[nombreEntite] = joueur1;
     nombreEntite++;
 
-    entite * joueur2 = creerEntite(0, 0, DIRECTIONDEFAULTSERPENT, '2', nombreEntite + 1, TAILLEINITIALESERPENT);
+    entite * joueur2 = creerEntite(nombreEntite + 1);
     listEntite[nombreEntite] = joueur2;
     nombreEntite++;
 
@@ -100,19 +100,10 @@ int main(){
     int posFruitSpecialX;
     int posFruitSpecialY;
 
-    //Variables scores
-    int score[NOMBREMAXENTITE] = { 0 };
-    int evolutionScore[NOMBREMAXENTITE] = { 0 };
-
-    int nombreFruitMange[NOMBREMAXENTITE] = { 0 };
-    int nombreFruitSpecialMange[NOMBREMAXENTITE] = { 0 };
-
-    int distanceParcouru[NOMBREMAXENTITE] = { 0 };
-
-    char pseudo[NOMBREMAXENTITE][TAILLEMAXPSEUDO];
+    //Entrer pseudo des joueurs
     for (int i = 0; i < nombreEntite; i++){
         printf("Entrez pseudo joueur %d :", listEntite[i]->num);
-        scanf("%s", pseudo[i]);
+        scanf("%s", listEntite[i]->pseudo);
     }
     
     //Création argument thread
@@ -184,8 +175,8 @@ int main(){
 
             //Si on rencontre un fruit on agrandit le serpent et on fait évoluer le score
             if (caseDirection == FRUIT){
-                evolutionScore[i] = scoreFruit;
-                nombreFruitMange[i]++;
+                listEntite[i]->evolutionScore = scoreFruit;
+                listEntite[i]->nombreFruitMange++;
                 ajouterClasseTerrain(terrain, listEntite[i]->num, tailleAjouterFruit);
                 listEntite[i]->longueur++;
 
@@ -195,8 +186,8 @@ int main(){
                     nombreFruit++;
                 }
             } else if (caseDirection == FRUITSPECIAL){
-                evolutionScore[i] = scoreFruitSpecial;
-                nombreFruitSpecialMange[i]++;
+                listEntite[i]->evolutionScore = scoreFruitSpecial;
+                listEntite[i]->nombreFruitSpecialMange++;
                 ajouterClasseTerrain(terrain, listEntite[i]->num, tailleAjouterFruitSpecial);
                 listEntite[i]->longueur++;
                 tempApparition = -1;
@@ -210,7 +201,7 @@ int main(){
             //On pose une partie du corp du serpent
             terrain->tableau[listEntite[i]->posX][listEntite[i]->posY] = listEntite[i]->longueur + CLASSESERPENT * listEntite[i]->num;
 
-            distanceParcouru[i]++;
+            listEntite[i]->distanceParcourue++;
         }
         #pragma endregion
 
@@ -226,21 +217,21 @@ int main(){
         #pragma endregion
 
         #pragma region AFFICHAGE
-        afficherPartie(terrain, listEntite, pseudo, nombreEntite, score, evolutionScore);
+        afficherPartie(terrain, listEntite, nombreEntite);
         #pragma endregion
 
         #pragma region SCORE
         //Calculs des scores
         for (int i = 0; i < nombreEntite; i++){
-            score[i] += evolutionScore[i];
-            evolutionScore[i] = 0;
+            listEntite[i]->score += listEntite[i]->evolutionScore;
+            listEntite[i]->evolutionScore = 0;
         }
         #pragma endregion
 
         #pragma region TESTS FIN
         //Test fin de partie
         //Si on a mangé tout les fruits
-        if (nombreFruit <= somme(nombreFruitMange, nombreEntite)){
+        if (nombreCaseObj(terrain, FRUIT) == 0){
             launched = false;
         }
         //Si plus aucun joueur est en vie
@@ -259,13 +250,13 @@ int main(){
 
     #pragma region AFFICHAGE FIN
     //Affichage vainqueur
-    afficherFin(terrain->longueur, nombreJoueurEnVie, listEntite, nombreEntite, pseudo, score, nombreFruitMange, nombreFruitSpecialMange, distanceParcouru);
+    afficherFin(terrain->longueur, listEntite, nombreEntite);
     #pragma endregion
 
     #pragma region GESTION FICHIER
     //Enregistrement fichier
     for (int i = 0; i < nombreEntite; i++){
-        ecrire(CHEMINSCORE, pseudo[i], score[i], graine);    
+        ecrire(CHEMINSCORE, listEntite[i]->pseudo, listEntite[i]->score, graine);    
     }
     #pragma endregion
 

@@ -15,7 +15,7 @@ void affichageTerrain(terrain * terrain, entite* listEntite[NOMBREMAXENTITE], in
 
                 //Si une entité est présente à ces coordonnées
                 if (listEntite[k]->posX == i && listEntite[k]->posY == j){
-                    printf("%c", listEntite[k]->nom);
+                    printf("%d", listEntite[k]->num);
                     caseVide = false;
                 }
             }
@@ -74,32 +74,39 @@ void afficherDecompte(terrain * terrain, entite * listEntite[NOMBREMAXENTITE], i
     }
 }
 
-void afficherPartie(terrain * terrain, entite * listEntite[NOMBREMAXENTITE], char pseudo[NOMBREMAXENTITE][TAILLEMAXPSEUDO], int nombreEntite, int score[NOMBREMAXENTITE], int evolutionScore[NOMBREMAXENTITE]){
+void afficherPartie(terrain * terrain, entite * listEntite[NOMBREMAXENTITE], int nombreEntite){
     clearAffichage();
     for (int i = 0; i < nombreEntite; i++){
-        printf("Score %s : %d", pseudo[i], score[i]);
-        if (evolutionScore[i] > 0){
-            printf(" + %d", evolutionScore[i]);
+        printf("Score %s : %d", listEntite[i]->pseudo, listEntite[i]->score);
+        if (listEntite[i]->evolutionScore > 0){
+            printf(" + %d", listEntite[i]->evolutionScore);
         }
         printf("\n");
     }
     affichageTerrain(terrain, listEntite, nombreEntite);
 }
 
-void afficherFin(int longueur, int nombreJoueurEnVie, entite * listEntite[NOMBREMAXENTITE], int nombreEntite, char pseudo[NOMBREMAXENTITE][TAILLEMAXPSEUDO], int score[NOMBREMAXENTITE], int nombreFruitMange[NOMBREMAXENTITE], int nombreFruitSpecialMange[NOMBREMAXENTITE], int distanceParcouru[NOMBREMAXENTITE]){
+void afficherFin(int longueur, entite * listEntite[NOMBREMAXENTITE], int nombreEntite){
+    int nombreJoueurEnVie = 0;
+    for (int i = 0; i < nombreEntite; i++){
+        if (listEntite[i]->enVie){
+            nombreJoueurEnVie++;
+        }
+    }
+    
     if (nombreJoueurEnVie == 0 && nombreEntite >= 2){
         printfLongueur("Partie nulle", longueur, '=');
     } else if (nombreEntite >= 2){
         int vainqueur = 0;
-        int scoreMax = score[0];
+        int scoreMax = listEntite[0]->score;
         for (int i = 1; i < nombreEntite; i++){
-            if (score[i] > scoreMax){
-                scoreMax = score[i];
-                vainqueur = listEntite[i]->num;
+            if (listEntite[i]->score > scoreMax){
+                scoreMax = listEntite[i]->score;
+                vainqueur = i;
             }
         }
         char message[30];
-        sprintf(message, "%s gagne", pseudo[vainqueur - 1]);
+        sprintf(message, "%s gagne", listEntite[vainqueur]->pseudo);
         printfLongueur(message, longueur, '=');
     } else if (nombreJoueurEnVie == 0){
         printfLongueur("Défaite", longueur, '=');
@@ -109,11 +116,11 @@ void afficherFin(int longueur, int nombreJoueurEnVie, entite * listEntite[NOMBRE
 
     //Affichage du message de fin avec stats
     for (int i = 0; i < nombreEntite; i++){
-        printf("Joueur : %s\n", pseudo[i]);
-        printf("Score : %d\n", score[i]);
+        printf("Joueur : %s\n", listEntite[i]->pseudo);
+        printf("Score : %d\n", listEntite[i]->score);
         printf("Taille serpent : %d\n", listEntite[i]->longueur);
-        printf("Nombre de fruit mangé : %d\n", nombreFruitMange[i]);
-        printf("Nombre de fruit spécial mangé : %d\n", nombreFruitSpecialMange[i]);
-        printf("Distance parcouru : %d\n\n", distanceParcouru[i]);
+        printf("Nombre de fruit mangé : %d\n", listEntite[i]->nombreFruitMange);
+        printf("Nombre de fruit spécial mangé : %d\n", listEntite[i]->nombreFruitSpecialMange);
+        printf("Distance parcouru : %d\n\n", listEntite[i]->distanceParcourue);
     }
 }

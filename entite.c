@@ -1,15 +1,23 @@
 #include "entite.h"
 
-entite * creerEntite(int posX, int posY, int direction, char nom, int num, int longueur){
+entite * creerEntite(int num){
     //Constructeur d'entite
     entite * ent = malloc(sizeof(entite));
-    ent->posX = posX;
-    ent->posY = posY;
-    ent->direction = direction;
-    ent->nom = nom;
+
     ent->num = num;
-    ent->longueur = longueur;
     ent->enVie = true;
+
+    ent->posX = 0;
+    ent->posY = 0;
+    ent->direction = DIRECTIONDEFAULTSERPENT;
+    
+    ent->score = 0;
+    ent->evolutionScore = 0;
+
+    ent->longueur = TAILLEINITIALESERPENT;
+    ent->distanceParcourue = 0;
+    ent->nombreFruitMange = 0;
+    ent->nombreFruitSpecialMange = 0;
     return ent;
 }
 
