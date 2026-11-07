@@ -3,6 +3,10 @@
 #include "view.h"
 #include "utilitaire.h"
 
+void initWindow(){
+    printf("\n");
+}
+
 //Affiche le plateau avec tous ce éléments
 void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     //Affichage du terrain et des entites dans le terminal
@@ -147,4 +151,8 @@ void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombr
         printf("Nombre de fruit spécial mangé : %d\n", listEntite[i]->nombreFruitSpecialMange);
         printf("Distance parcouru : %d\n\n", listEntite[i]->distanceParcourue);
     }
+}
+
+void detruireWindow(){
+    printf("\n");
 }

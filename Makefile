@@ -3,8 +3,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g
 CPPFLAGS = -Iinclude
-LDFLAGS =
-LDLIBS =
+CPPFLAGS += $(shell pkg-config --cflags sdl3)
+LDLIBS += $(shell pkg-config --libs sdl3)
 
 # Nom de l'exécutable
 EXEC = snake
@@ -16,7 +16,8 @@ BUILD_DIR = build
 ASSETS_DIR = assets
 
 # Fichiers sources, objets et dépendances
-SRC = $(wildcard $(SRC_DIR)/*.c)
+VIEW_SRC = src/viewSDL.c
+SRC = $(filter-out src/viewTerminal.c src/viewSDL.c,$(wildcard src/*.c)) $(VIEW_SRC)
 OBJ = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)
 

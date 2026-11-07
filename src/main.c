@@ -100,7 +100,10 @@ int main(){
     int posFruitSpecialX;
     int posFruitSpecialY;
 
+    initWindow();
+    
     afficherTitre(terrain->longueur);
+
 
     //Entrer pseudo des joueurs
     for (int i = 0; i < nombreEntite; i++){
@@ -273,6 +276,7 @@ int main(){
     pthread_join(clavier, NULL);
 
     restaurerTerminal();
+    detruireWindow();
 
     //On rend la mémoire allouée
     //Le terrain

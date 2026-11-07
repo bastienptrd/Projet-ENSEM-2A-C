@@ -63,6 +63,8 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 
 #pragma endregion
 
+
+// ===================== AFFICHAGE =====================
 #pragma region AFFICHAGE
 
 //Char de l'affichage du terrain
@@ -75,6 +77,11 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 
 //Nombre de retour à la ligne pour "effacer" l'affichage précédent
 #define NOMBRE_RETOUR_CLEAN 15
+
+//SDL
+#define TITRE_FENETRE "Snake"
+#define TAILLE_FENETRE_X 800
+#define TAILLE_FENETRE_Y 600
 
 #define NOMBRE_DECOMPTE 3
 #define TEMPS_CHIFFRES_DECOMPTE 2
