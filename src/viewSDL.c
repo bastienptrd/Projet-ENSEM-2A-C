@@ -92,12 +92,6 @@ void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], 
     SDL_RenderPresent(renderer);
 }
 
-void printfLongueur(char * message, int longueur, char symb){
-    printf("Pas fait\n");
-}
-void clearAffichage(){
-    printf("Pas fait\n");
-}
 void afficherTitre(int longueur){
     // On rempli l'écran de noir
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -128,7 +122,8 @@ void afficherPartie(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], i
     affichageTerrain(terrain, listEntite, nombreEntite);
 }
 void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
-    printf("Pas fait\n");
+    printf("Pas fait fin\n");
+    sleep(3);
 }
 
 void detruireWindow(){

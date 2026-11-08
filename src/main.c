@@ -127,13 +127,7 @@ int main(){
 
     #pragma endregion
     
-    initialiserTerminal();
-
-    //Detection clavier
-    pthread_t clavier;
-
-    //Recuperation des entrées clavier
-    pthread_create(&clavier, NULL, lireClavier, &ensembleJoueur);
+    initialiserController(&ensembleJoueur);
 
     //Selectionne une direction
     for (int i = 0; i < nombreEntite; i++){
@@ -149,10 +143,10 @@ int main(){
     //Retire l'autorisation du changement libre
     ensembleJoueur.pass = false;
 
-
-
     //Boucle principale
     while (launched){
+
+        gererEvent(&ensembleJoueur);
 
         #pragma region DEPLACEMENT SERPENT
         //Déplacement des serpents
@@ -271,12 +265,7 @@ int main(){
     }
     #pragma endregion
 
-    //On arrete le thread clavier
-    pthread_cancel(clavier);
-    pthread_join(clavier, NULL);
-
-    restaurerTerminal();
-    detruireWindow();
+    fermerController();
 
     //On rend la mémoire allouée
     //Le terrain

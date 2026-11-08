@@ -1,5 +1,10 @@
 #include "controller.h"
 
+//Detection clavier
+pthread_t clavier;
+
+    
+
 //Fait par IA
 static struct termios ancienTerminal;
 //Fait par IA
@@ -78,4 +83,24 @@ void *lireClavier(void *arg)
 
         usleep(1000000 / FREQ_CLAVIER);
     }
+}
+
+
+void initialiserController(entites * entites){
+    initialiserTerminal();
+
+    //Recuperation des entrées clavier
+    pthread_create(&clavier, NULL, lireClavier, entites);
+}
+
+void gererEvent(entites * entites){
+}
+
+void fermerController(){
+    
+    //On arrete le thread clavier
+    pthread_cancel(clavier);
+    pthread_join(clavier, NULL);
+
+    restaurerTerminal();
 }

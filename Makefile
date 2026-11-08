@@ -16,8 +16,11 @@ BUILD_DIR = build
 ASSETS_DIR = assets
 
 # Fichiers sources, objets et dépendances
-VIEW_SRC = src/viewSDL.c
-SRC = $(filter-out src/viewTerminal.c src/viewSDL.c,$(wildcard src/*.c)) $(VIEW_SRC)
+VIEW_SRC = src/viewTerminal.c
+CONTROLLER_SRC = src/controllerTerminal.c
+#VIEW_SRC = src/viewSDL.c
+#CONTROLLER_SRC = src/controllerSDL.c
+SRC = $(filter-out src/viewTerminal.c src/viewSDL.c src/controllerSDL.c src/controllerTerminal.c,$(wildcard src/*.c)) $(VIEW_SRC) $(CONTROLLER_SRC)
 OBJ = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)
 
