@@ -1,10 +1,34 @@
-#include "controller.h"
-#include <SDL3/SDL.h>
+#include <stdio.h>
+#include "../include/controller.h"
+#include "../include/configSDL.h"
 
-SDL_Event event;
+static SDL_Event event;
 
 void initialiserController(entites * entites){
+    UNUSED(entites);
+}
 
+void lirePseudo(char pseudo[TAILLE_MAX_PSEUDO]){
+    SDL_StartTextInput(window);
+    int i = 0;
+    bool launched = true;
+    while (launched){
+        while (SDL_PollEvent(&event)){
+            if (event.type == SDL_EVENT_QUIT){
+                launched = false;
+            } else if (event.type == SDL_EVENT_TEXT_INPUT && i < 20){
+                pseudo[i] = event.text.text[0];
+                i++;
+            } else if (event.type == SDL_EVENT_KEY_DOWN){
+                if (event.key.key == SDLK_RETURN){
+                    launched = false;
+                }
+            }
+        }
+    }
+    printf("%s\n", pseudo);
+    fflush(stdout);
+    SDL_StopTextInput(window);
 }
 
 void gererEvent(entites * entites){

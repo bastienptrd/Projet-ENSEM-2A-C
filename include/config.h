@@ -1,14 +1,13 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 #include <pthread.h>
 
 extern pthread_mutex_t dmutexjoueur1;
 extern pthread_mutex_t dmutexjoueur2;
+
+// ====================== MARCO ======================
+
+#define UNUSED(x) (void)(x)
 
 // ===================== TERRAIN =====================
 #pragma region TERRAIN
@@ -56,7 +55,7 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 //Séparateur corps des serpents des cases du terrain
 #define CLASSE_SERPENT 1000
 
-//Nombre d'essai de placement des serpents avant crash
+//Nombre d'essais de placement des serpents avant crash
 #define NOMBRE_ESSAI_MAX 10000
 
 #define TAILLE_MAX_PSEUDO 20
@@ -75,13 +74,8 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 #define CHAR_FRUIT_SPECIAL '@'
 #define CHAR_SERPENT 'o'
 
-//Nombre de retour à la ligne pour "effacer" l'affichage précédent
+//Nombre de retours à la ligne pour "effacer" l'affichage précédent
 #define NOMBRE_RETOUR_CLEAN 15
-
-//SDL
-#define TITRE_FENETRE "Snake"
-#define TAILLE_FENETRE_X 800
-#define TAILLE_FENETRE_Y 600
 
 #define NOMBRE_DECOMPTE 3
 #define TEMPS_CHIFFRES_DECOMPTE 2
@@ -109,5 +103,3 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 
 #define FREQ_CLAVIER 10
 #pragma endregion
-
-#endif

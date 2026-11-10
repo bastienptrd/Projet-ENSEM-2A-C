@@ -1,6 +1,5 @@
-#include <stdlib.h>
-#include <string.h>
-
+#pragma once
+#include "entite.h"
 #include "terrain.h"
 
 void initWindow();

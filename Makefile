@@ -1,57 +1,97 @@
 
+# ==============================
 # Compilateur et options
+# ==============================
+
 CC = gcc
 CFLAGS = -Wall -Wextra -g
 CPPFLAGS = -Iinclude
-CPPFLAGS += $(shell pkg-config --cflags sdl3)
-LDLIBS += $(shell pkg-config --libs sdl3)
+LDLIBS =
+LDFLAGS =
 
-# Nom de l'exécutable
-EXEC = snake
+# ==============================
+# Mode d'exécution
+# ==============================
 
+# Mode par défaut
+MODE ?= sdl
+
+ifeq ($(MODE),terminal)
+    VIEW_SRC = src/viewTerminal.c
+    CONTROLLER_SRC = src/controllerTerminal.c
+
+else ifeq ($(MODE),sdl)
+    VIEW_SRC = src/viewSDL.c
+    CONTROLLER_SRC = src/controllerSDL.c
+
+    CPPFLAGS += $(shell pkg-config --cflags sdl3)
+    LDLIBS += $(shell pkg-config --libs sdl3)
+
+else
+    $(error MODE invalide : $(MODE). Utilise MODE=terminal ou MODE=sdl)
+endif
+
+# ==============================
 # Dossiers
-SRC_DIR = src
-INCLUDE_DIR = include
-BUILD_DIR = build
-ASSETS_DIR = assets
+# ==============================
 
-# Fichiers sources, objets et dépendances
-VIEW_SRC = src/viewTerminal.c
-CONTROLLER_SRC = src/controllerTerminal.c
-#VIEW_SRC = src/viewSDL.c
-#CONTROLLER_SRC = src/controllerSDL.c
-SRC = $(filter-out src/viewTerminal.c src/viewSDL.c src/controllerSDL.c src/controllerTerminal.c,$(wildcard src/*.c)) $(VIEW_SRC) $(CONTROLLER_SRC)
-OBJ = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(SRC))
+SRC_DIR = src
+BUILD_DIR = build/$(MODE)
+
+# ==============================
+# Fichiers sources
+# ==============================
+
+COMMON_SRC = $(filter-out \
+    src/viewTerminal.c \
+    src/viewSDL.c \
+    src/controllerTerminal.c \
+    src/controllerSDL.c, \
+    $(wildcard src/*.c))
+
+SRC = $(COMMON_SRC) $(VIEW_SRC) $(CONTROLLER_SRC)
+
+OBJ = $(patsubst src/%.c,$(BUILD_DIR)/%.o,$(SRC))
 DEP = $(OBJ:.o=.d)
 
-# Cibles
+# ==============================
+# Exécutable
+# ==============================
+
+EXEC = snake-$(MODE)
+
 .PHONY: all run clean mrproper
 
 all: $(EXEC)
 
-# Edition des liens
 $(EXEC): $(OBJ)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
-# Création du dossier de compilation
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+# ==============================
+# Compilation
+# ==============================
 
-# Compilation des fichiers .c en fichiers .o
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+$(BUILD_DIR):
+	mkdir -p $@
+
+$(BUILD_DIR)/%.o: src/%.c | $(BUILD_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
 
-# Chargement des dépendances des fichiers .h
 -include $(DEP)
 
-# Compilation et exécution
+# ==============================
+# Exécution
+# ==============================
+
 run: $(EXEC)
 	./$(EXEC)
 
-# Suppression des objets et dépendances
-clean:
-	rm -rf $(BUILD_DIR)
+# ==============================
+# Nettoyage
+# ==============================
 
-# Nettoyage complet
+clean:
+	rm -rf build
+
 mrproper: clean
-	rm -f $(EXEC)
+	rm -f snake-terminal snake-sdl

@@ -1,14 +1,15 @@
-#include "controller.h"
+#include <termios.h>
+#include <stdio.h>
+#include <unistd.h>
+#include "../include/controller.h"
 
 //Detection clavier
-pthread_t clavier;
-
-    
+static pthread_t clavier;
 
 //Fait par IA
 static struct termios ancienTerminal;
 //Fait par IA
-void initialiserTerminal(void)
+static void initialiserTerminal(void)
 {
     struct termios nouveauTerminal;
 
@@ -20,21 +21,20 @@ void initialiserTerminal(void)
     tcsetattr(STDIN_FILENO, TCSANOW, &nouveauTerminal);
 }
 //Fait par IA
-void restaurerTerminal(void)
+static void restaurerTerminal(void)
 {
     tcsetattr(STDIN_FILENO, TCSANOW, &ancienTerminal);
 }
 
 //Récupère les entrées clavier
-void *lireClavier(void *arg)
+static void *lireClavier(void *arg)
 {
     entites * ents = arg;
     entite * joueur1 = ents->listEntite[0];
     entite * joueur2 = ents->listEntite[1];
-    char c;
 
-    while (1) {
-        c = getchar();
+    while (*(ents->launched)) {
+        char c = getchar();
 
         if (c != EOF) {
             pthread_mutex_lock(&dmutexjoueur1);
@@ -83,6 +83,8 @@ void *lireClavier(void *arg)
 
         usleep(1000000 / FREQ_CLAVIER);
     }
+
+    return NULL;
 }
 
 
@@ -93,7 +95,14 @@ void initialiserController(entites * entites){
     pthread_create(&clavier, NULL, lireClavier, entites);
 }
 
+
+void lirePseudo(char pseudo[TAILLE_MAX_PSEUDO]){
+    printf("Entrez votre pseudo : ");
+    scanf("%s", pseudo);
+}
+
 void gererEvent(entites * entites){
+    UNUSED(entites);
 }
 
 void fermerController(){

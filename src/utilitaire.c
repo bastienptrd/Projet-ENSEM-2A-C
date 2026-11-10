@@ -1,5 +1,5 @@
 //Renvoie le max de a et b
-int max(int a, int b){
+float max(float a, float b){
     if (a > b){
         return a;
     }
@@ -7,7 +7,7 @@ int max(int a, int b){
 }
 
 //Renvoie le min de a et b
-int min(int a, int b){
+float min(float a, float b){
     if (a < b){
         return a;
     }

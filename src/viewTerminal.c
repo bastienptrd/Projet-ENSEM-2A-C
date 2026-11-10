@@ -1,14 +1,15 @@
 #include <stdio.h>
-
-#include "view.h"
-#include "utilitaire.h"
+#include <string.h>
+#include <unistd.h>
+#include "../include/view.h"
+#include "../include/utilitaire.h"
 
 void initWindow(){
     printf("\n");
 }
 
-//Affiche le plateau avec tous ce éléments
-void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
+//Affiche le plateau avec tous ces éléments
+static void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     //Affichage du terrain et des entites dans le terminal
     for (int i = 0; i < terrain->largeur; i++){
         for (int j = 0; j < terrain->longueur; j++){
@@ -26,12 +27,12 @@ void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], 
                 }
             }
 
-            //Si la case a déjà été dessiner on passe à la suivante
+            //Si la case a déjà été dessiner, on passe à la suivante
             if (!caseVide){
                 continue;
             }
 
-            //Sinon on dessine le terrain
+            //Sinon, on dessine le terrain
             if (terrain->tableau[i][j] == VIDE){
                 printf("%c", CHAR_VIDE);
             } else if (terrain->tableau[i][j] == MUR){
@@ -51,7 +52,7 @@ void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], 
 }
 
 //Fait un printf centré par rapport à longueur
-void printfLongueur(char * message, int longueur, char symb){
+static void printfLongueur(char * message, int longueur, char symb){
     int tailleMessage = strlen(message);
     for (int i = 0; i < (longueur - tailleMessage) / 2; i++){
         printf("%c", symb);
@@ -67,7 +68,7 @@ void printfLongueur(char * message, int longueur, char symb){
 }
 
 //Fait NOMBRE_RETOUR_CLEAN retour à la ligne pour faire de la place dans le terminal
-void clearAffichage(){
+static void clearAffichage(){
     for (int i = 0; i < NOMBRE_RETOUR_CLEAN; i++){
         printf("\n");
     }
@@ -100,7 +101,7 @@ void afficherDecompte(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE],
     }
 }
 
-//Affiche tous les élément en milieu de partie
+//Affiche tous les éléments en milieu de partie
 void afficherPartie(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     clearAffichage();
     for (int i = 0; i < nombreEntite; i++){
