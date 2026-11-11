@@ -1,4 +1,6 @@
 /.vscode/
+/.idea/
 /build/
-/snake
+/snake-sdl
+/snake-terminal
 /scores.txt

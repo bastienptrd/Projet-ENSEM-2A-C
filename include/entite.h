@@ -1,6 +1,5 @@
-#ifndef ENTITE_H
-#define ENTITE_H
-
+#pragma once
+#include <stdbool.h>
 #include "config.h"
 
 typedef struct{
@@ -25,5 +24,3 @@ entite * creerEntite(int num);
 int caseSuivante(entite * ent, int ** terrain);
 void deplacerDirection(entite * ent);
 void freeEntite(entite * ent);
-
-#endif

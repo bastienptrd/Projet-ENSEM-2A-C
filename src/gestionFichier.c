@@ -1,13 +1,16 @@
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "config.h"
+
 #include "gestionFichier.h"
 
 //Lit un terrain depuis un fichier .txt
 int** lireTerrain(char *fichier, int *largeur, int* longueur){
-	FILE *f;
 	char str[10000];
-	int i,j;
 	char ch;
     *largeur = 0;
-	f = fopen(fichier,"r");
+	FILE *f = fopen(fichier, "r");
     if (f == NULL){
         printf("Je ne peux pas ouvrir le fichier %s\n",fichier);
         exit(-1);
@@ -20,12 +23,12 @@ int** lireTerrain(char *fichier, int *largeur, int* longueur){
 	fclose(f);
 
 	int ** plateau = (int **)malloc(*largeur *sizeof(int *));
-	for (i=0; i < *largeur;i++){
+	for (int i = 0; i < *largeur;i++){
 		plateau[i] = (int *)malloc(*longueur * sizeof(int));
 	}	
 
 	f = fopen(fichier,"r");
-	i = 0; j = 0;
+	int i = 0; int j = 0;
 	while ((ch = getc(f)) != EOF) {
         if (ch != '\n') {
 			if (j < *longueur){

@@ -1,21 +1,24 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include "entite.h"
 #include "terrain.h"
 
 //Créer un terrain vide depuis une longueur et une largeur
 terrain * creerTerrain(int largeur, int longeur){
-    terrain * terrain = malloc(sizeof(terrain));
+    terrain * plateau = malloc(sizeof(terrain));
     //Créer le tableau du terrain
-    terrain->tableau = malloc(sizeof(int*) * largeur);
+    plateau->tableau = malloc(sizeof(int*) * largeur);
     for (int i = 0; i < largeur; i++){
-        terrain->tableau[i] = malloc(sizeof(int) * longeur);
+        plateau->tableau[i] = malloc(sizeof(int) * longeur);
     }
-    terrain->largeur = largeur;
-    terrain->longueur = longeur;
-    return terrain;
+    plateau->largeur = largeur;
+    plateau->longueur = longeur;
+    return plateau;
 }
 
 //Pose des murs sur les bords du terrain
 void initTerrain(terrain * terrain){
-    //Place des murs sur toutes les cotés
+    //Place des murs sur tous les côtés
     for (int i = 0; i < terrain->largeur; i++){
         for (int j = 0; j < terrain->longueur; j++){
             if (i == 0 || j == 0 || i == terrain->largeur - 1 || j == terrain->longueur - 1){
@@ -27,7 +30,7 @@ void initTerrain(terrain * terrain){
     }
 }
 
-//Ajoute val au case dont la classe (cf CLASSE_SERPENT) vaut num  
+//Ajoute val aux cases dont la classe (cf. CLASSE_SERPENT) vaut num
 void ajouterClasseTerrain(terrain * terrain, int num, int val){
     for (int i = 0; i < terrain->largeur; i++){
         for (int j = 0; j < terrain->longueur; j++){

@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 #include "../include/view.h"
 #include "../include/controller.h"
@@ -31,8 +33,11 @@ int main(){
     listEntite[nombreEntite] = joueur2;
     nombreEntite++;
 
-    //Choix du nombre de joueur
-    nombreEntite = nombreTotalJoueur;
+    //Choix du nombre de joueurs
+    if (nombreEntite != nombreTotalJoueur) {
+        nombreEntite = nombreTotalJoueur;
+    }
+
     
     #pragma endregion
 
@@ -52,13 +57,13 @@ int main(){
     int scoreFruit = SCORE_FRUIT;
     int scoreFruitSpecial = SCORE_FRUIT_SPECIAL;
 
-    //initialisation terrain
-    //terrain * terrain = creerTerrain(largeur, longueur);
-    //initTerrain(terrain);
-    terrain * terrain = malloc(sizeof(terrain));
+    // Initialisation terrain
+    terrain * terrain = creerTerrain(largeur, longueur);
+    initTerrain(terrain);
+    /*terrain * terrain = malloc(sizeof(terrain));
     terrain->tableau = lireTerrain(CHEMIN_TERRAIN, &largeur, &longueur);
     terrain->largeur = largeur;
-    terrain->longueur = longueur;
+    terrain->longueur = longueur;*/
 
     //Initialisation du random
     int graine = time(NULL);
@@ -95,19 +100,9 @@ int main(){
     
     #pragma endregion
     
-    //Variables fruit spécial
-    time_t tempApparition = -1;
-    int posFruitSpecialX;
-    int posFruitSpecialY;
+    //Condition de la boucle principale
+    bool launched = true;
 
-    afficherTitre(terrain->longueur);
-
-    //Entrer pseudo des joueurs
-    for (int i = 0; i < nombreEntite; i++){
-        printf("Entrez pseudo joueur %d :", listEntite[i]->num);
-        scanf("%s", listEntite[i]->pseudo);
-    }
-    
     //Création argument thread
     entites ensembleJoueur;
     for (int i = 0; i < nombreEntite; i++){
@@ -115,51 +110,57 @@ int main(){
     }
     ensembleJoueur.nombreEntite = nombreEntite;
     ensembleJoueur.pass = false;
+    ensembleJoueur.launched = &launched;
 
     //Permet d'arreter la boucle au besoin
     int nombreJoueurEnVie = nombreEntite;
-
-    //Condition de la boucle principale
-    bool launched = true;
+    //Variables fruit spécial
+    time_t tempApparition = -1;
+    int posFruitSpecialX;
+    int posFruitSpecialY;
 
     #pragma endregion
+
+    initWindow();
     
-    initialiserTerminal();
+    afficherTitre(terrain->longueur);
 
-    //Detection clavier
-    pthread_t clavier;
-
-    //Recuperation des entrées clavier
-    pthread_create(&clavier, NULL, lireClavier, &ensembleJoueur);
+    //Entrer pseudo des joueurs
+    for (int i = 0; i < nombreEntite; i++){
+        lirePseudo(listEntite[i]->pseudo);
+    }
+    
+    initialiserController(&ensembleJoueur);
 
     //Selectionne une direction
     for (int i = 0; i < nombreEntite; i++){
         listEntite[i]->direction = DIRECTION_DEFAULT_SERPENT;
     }
 
-    //Autorise les joueur à changer librement de direction avant le début
+    //Autorise les joueurs à changer librement de direction avant le début
     ensembleJoueur.pass = true;
 
+    gererEvent(&ensembleJoueur);
     //Decompte vers le début
     afficherDecompte(terrain, listEntite, nombreEntite);
 
-    //Retire l'autorisation du changement libre
+    //Retire authorisation du changement libre
     ensembleJoueur.pass = false;
-
-
 
     //Boucle principale
     while (launched){
 
+        gererEvent(&ensembleJoueur);
+
         #pragma region DEPLACEMENT SERPENT
         //Déplacement des serpents
         for (int i = 0; i < nombreEntite; i++){
-            //Si le joueur est mort on passe au suivant
+            //Si le joueur est mort, on passe au suivant
             if (listEntite[i]->enVie == 0){
                 continue;
             }
 
-            //On verrouille le mutex pour eviter des changement de direction entre le teste et le déplacement
+            //On verrouille le mutex pour eviter des changements de direction entre le teste et le déplacement
             pthread_mutex_lock(listMutex + i);
 
             //On regarde la prochaine case atteinte par le serpent
@@ -177,7 +178,7 @@ int main(){
             //On "déplace" le corps du serpent
             ajouterClasseTerrain(terrain, listEntite[i]->num, -1);
 
-            //Si on rencontre un fruit on agrandit le serpent et on fait évoluer le score
+            //Si on rencontre un fruit, on agrandit le serpent et on fait évoluer le score
             if (caseDirection == FRUIT){
                 listEntite[i]->evolutionScore = scoreFruit;
                 listEntite[i]->nombreFruitMange++;
@@ -236,11 +237,11 @@ int main(){
 
         #pragma region TESTS FIN
         //Test fin de partie
-        //Si on a mangé tout les fruits
+        //Si on a mangé tous les fruits
         if (nombreCaseObj(terrain, FRUIT) == 0){
             launched = false;
         }
-        //Si plus aucun joueur est en vie
+        //Si plus aucun joueur n'est en vie
         if (nombreJoueurEnVie == 0){
             launched = false;
         }
@@ -268,11 +269,7 @@ int main(){
     }
     #pragma endregion
 
-    //On arrete le thread clavier
-    pthread_cancel(clavier);
-    pthread_join(clavier, NULL);
-
-    restaurerTerminal();
+    fermerController();
 
     //On rend la mémoire allouée
     //Le terrain
