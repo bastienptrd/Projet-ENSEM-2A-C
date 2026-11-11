@@ -90,8 +90,16 @@ void afficherTitre(int longueur){
     printfLongueur("", longueur, '=');
 }
 
+void afficherPseudo(entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite, int i, int numEntite) {
+    UNUSED(listEntite);
+    UNUSED(nombreEntite);
+    UNUSED(i);
+    UNUSED(nombreEntite);
+}
+
 //Affiche le moment du décompte
-void afficherDecompte(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
+void afficherDecompte(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite, time_t tempsDebut){
+    clearAffichage();
     for (int i = NOMBRE_DECOMPTE; i > 0; i--){
         clearAffichage();
         char message[5];

@@ -74,10 +74,13 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 // ===================== AFFICHAGE =====================
 #pragma region AFFICHAGE
 
+enum fenetre {START, MENU, PSEUDO, DECOMPTE, JEU, FIN, PARAMETRE};
+
 #define NOMBRE_DECOMPTE 3
 #define TEMPS_CHIFFRES_DECOMPTE 2
 
 //Nombre image par seconde de l'affichage et du déplacement
+#define FREQ_AFFICHAGE 60
 #define FREQ_DEPLACEMENT 2
 #pragma endregion
 

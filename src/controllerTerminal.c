@@ -101,8 +101,33 @@ void lirePseudo(char pseudo[TAILLE_MAX_PSEUDO]){
     scanf("%s", pseudo);
 }
 
-void gererEvent(entites * entites){
+void gererEventMenu(entites * entites, int * fenetre){
     UNUSED(entites);
+    *fenetre = PSEUDO;
+}
+
+void gererEventPseudo(entites * entites, int * fenetre, int * i, int * numEntite) {
+    UNUSED(i);
+
+    printf("Entrez votre pseudo joueur %d : ", *numEntite + 1);
+    scanf("%s", entites->listEntite[*numEntite]->pseudo);
+    (*numEntite)++;
+    if (*numEntite == entites->nombreEntite) {
+        *fenetre = DECOMPTE;
+    }
+}
+
+void gererEventDecompte(entites * entites, int * fenetre, time_t tempsDebut){
+    UNUSED(entites);
+    *fenetre = JEU;
+}
+void gererEventJeu(entites * entites, int * fenetre){
+    UNUSED(entites);
+    UNUSED(fenetre);
+}
+void gererEventFin(entites * entites, int * fenetre){
+    UNUSED(fenetre);
+    *(entites->launched) = false;
 }
 
 void fermerController(){

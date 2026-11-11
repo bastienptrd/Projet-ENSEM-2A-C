@@ -102,6 +102,10 @@ int main(){
     
     //Condition de la boucle principale
     bool launched = true;
+    int fenetre = START;
+
+    int rangPseudo = 0;
+    int numEntitePseudo = 0;
 
     //Création argument thread
     entites ensembleJoueur;
@@ -111,6 +115,11 @@ int main(){
     ensembleJoueur.nombreEntite = nombreEntite;
     ensembleJoueur.pass = false;
     ensembleJoueur.launched = &launched;
+
+    struct timespec dernierUpdate, tempsActuelle;
+    clock_gettime(CLOCK_MONOTONIC, &dernierUpdate);
+
+    time_t tempsDebut;
 
     //Permet d'arreter la boucle au besoin
     int nombreJoueurEnVie = nombreEntite;
@@ -122,150 +131,179 @@ int main(){
     #pragma endregion
 
     initWindow();
-    
-    afficherTitre(terrain->longueur);
 
-    //Entrer pseudo des joueurs
-    for (int i = 0; i < nombreEntite; i++){
-        lirePseudo(listEntite[i]->pseudo);
-    }
-    
-    initialiserController(&ensembleJoueur);
-
-    //Selectionne une direction
-    for (int i = 0; i < nombreEntite; i++){
-        listEntite[i]->direction = DIRECTION_DEFAULT_SERPENT;
-    }
-
-    //Autorise les joueurs à changer librement de direction avant le début
-    ensembleJoueur.pass = true;
-
-    gererEvent(&ensembleJoueur);
-    //Decompte vers le début
-    afficherDecompte(terrain, listEntite, nombreEntite);
-
-    //Retire authorisation du changement libre
-    ensembleJoueur.pass = false;
-
-    //Boucle principale
+    #pragma region BOUCLE PRINCIPALE
     while (launched){
 
-        gererEvent(&ensembleJoueur);
+        #pragma region GESTION EVENT
+        if (fenetre == START) {
+            // Chargement
+            fenetre = MENU;
+        }else if (fenetre == MENU) {
+            gererEventMenu(&ensembleJoueur, &fenetre);
+        } else if (fenetre == PSEUDO) {
+            gererEventPseudo(&ensembleJoueur, &fenetre, &rangPseudo, &numEntitePseudo);
+            if (fenetre == DECOMPTE) {
 
-        #pragma region DEPLACEMENT SERPENT
-        //Déplacement des serpents
-        for (int i = 0; i < nombreEntite; i++){
-            //Si le joueur est mort, on passe au suivant
-            if (listEntite[i]->enVie == 0){
-                continue;
-            }
+                time(&tempsDebut);
 
-            //On verrouille le mutex pour eviter des changements de direction entre le teste et le déplacement
-            pthread_mutex_lock(listMutex + i);
+                initialiserController(&ensembleJoueur);
 
-            //On regarde la prochaine case atteinte par le serpent
-            int caseDirection = caseSuivante(listEntite[i], terrain->tableau);
-
-            //Si c'est un obstacle
-            if (caseDirection > CLASSE_SERPENT || caseDirection == MUR || caseDirection == OBSTACLE){
-                listEntite[i]->enVie = false;
-                nombreJoueurEnVie--;
-                pthread_mutex_unlock(listMutex + i); 
-                continue;
-            }
-
-            //Si la case n'est pas "solide"
-            //On "déplace" le corps du serpent
-            ajouterClasseTerrain(terrain, listEntite[i]->num, -1);
-
-            //Si on rencontre un fruit, on agrandit le serpent et on fait évoluer le score
-            if (caseDirection == FRUIT){
-                listEntite[i]->evolutionScore = scoreFruit;
-                listEntite[i]->nombreFruitMange++;
-                ajouterClasseTerrain(terrain, listEntite[i]->num, tailleAjouterFruit);
-                listEntite[i]->longueur++;
-
-                if (fruitInfinie){
-                    //On rajoute un fruit sur le terrain
-                    ajouterAleatoireTerrain(terrain, nombreFruitAjouter, FRUIT, NULL, NULL);
-                    nombreFruit++;
+                //Selectionne une direction
+                for (int i = 0; i < nombreEntite; i++){
+                    listEntite[i]->direction = DIRECTION_DEFAULT_SERPENT;
                 }
-            } else if (caseDirection == FRUIT_SPECIAL){
-                listEntite[i]->evolutionScore = scoreFruitSpecial;
-                listEntite[i]->nombreFruitSpecialMange++;
-                ajouterClasseTerrain(terrain, listEntite[i]->num, tailleAjouterFruitSpecial);
-                listEntite[i]->longueur++;
-                tempApparition = -1;
+
+                //Autorise les joueurs à changer librement de direction avant le début
+                ensembleJoueur.pass = true;
             }
-
-            //On déplace la tête
-            deplacerDirection(listEntite[i]);
-
-            pthread_mutex_unlock(listMutex + i);
-
-            //On pose une partie du corp du serpent
-            terrain->tableau[listEntite[i]->posX][listEntite[i]->posY] = listEntite[i]->longueur + CLASSE_SERPENT * listEntite[i]->num;
-
-            listEntite[i]->distanceParcourue++;
+        } else if (fenetre == DECOMPTE) {
+            gererEventDecompte(&ensembleJoueur, &fenetre, tempsDebut);
+            if (fenetre == JEU) {
+                //Retire authorisation du changement libre
+                ensembleJoueur.pass = false;
+            }
+        } else if (fenetre == JEU) {
+            gererEventJeu(&ensembleJoueur, &fenetre);
+        } else if (fenetre == FIN) {
+            gererEventFin(&ensembleJoueur, &fenetre);
         }
         #pragma endregion
 
-        #pragma region FRUIT SPECIAL
-        //On fait les tests sur le fruit spécial
-        if (tempApparition == -1 && rand() % FREQ_APPARITION_FRUIT_SPECIAL * FREQ_DEPLACEMENT == 0){
-            tempApparition = time(NULL);
-            ajouterAleatoireTerrain(terrain, 1, FRUIT_SPECIAL, &posFruitSpecialX, &posFruitSpecialY);
-        } else if (tempApparition != -1 && difftime(time(NULL), tempApparition) > TEMP_APPARITION_FRUIT_SPECIAL){
-            terrain->tableau[posFruitSpecialX][posFruitSpecialY] = VIDE;
-            tempApparition = -1;
+        #pragma region UPDATE PLATEAU
+
+        // Calcul de la différence de temps en millisecondes entre la dernière update du plateau et le temps actuelle
+        clock_gettime(CLOCK_MONOTONIC, &tempsActuelle);
+        double dt = ((tempsActuelle.tv_sec - dernierUpdate.tv_sec) * 1000.0) + ((tempsActuelle.tv_nsec - dernierUpdate.tv_nsec) / 1000000.0); //Aider par IA temps en ms
+
+        if (fenetre == JEU && dt > 1000 / (float)FREQ_DEPLACEMENT) {
+            clock_gettime(CLOCK_MONOTONIC, &dernierUpdate);
+
+            #pragma region SCORE
+            //Calculs des scores du passage precédent (laisse le temps à l'affichage)
+            for (int i = 0; i < nombreEntite; i++){
+                listEntite[i]->score += listEntite[i]->evolutionScore;
+                listEntite[i]->evolutionScore = 0;
+            }
+            #pragma endregion
+
+            #pragma region DEPLACEMENT SERPENT
+            //Déplacement des serpents
+            for (int i = 0; i < nombreEntite; i++){
+                //Si le joueur est mort, on passe au suivant
+                if (listEntite[i]->enVie == 0){
+                    continue;
+                }
+
+                //On verrouille le mutex pour eviter des changements de direction entre le teste et le déplacement
+                pthread_mutex_lock(listMutex + i);
+
+                //On regarde la prochaine case atteinte par le serpent
+                int caseDirection = caseSuivante(listEntite[i], terrain->tableau);
+
+                //Si c'est un obstacle
+                if (caseDirection > CLASSE_SERPENT || caseDirection == MUR || caseDirection == OBSTACLE){
+                    listEntite[i]->enVie = false;
+                    nombreJoueurEnVie--;
+                    pthread_mutex_unlock(listMutex + i);
+                    continue;
+                }
+
+                //Si la case n'est pas "solide"
+                //On "déplace" le corps du serpent
+                ajouterClasseTerrain(terrain, listEntite[i]->num, -1);
+
+                //Si on rencontre un fruit, on agrandit le serpent et on fait évoluer le score
+                if (caseDirection == FRUIT){
+                    listEntite[i]->evolutionScore = scoreFruit;
+                    listEntite[i]->nombreFruitMange++;
+                    ajouterClasseTerrain(terrain, listEntite[i]->num, tailleAjouterFruit);
+                    listEntite[i]->longueur++;
+
+                    if (fruitInfinie){
+                        //On rajoute un fruit sur le terrain
+                        ajouterAleatoireTerrain(terrain, nombreFruitAjouter, FRUIT, NULL, NULL);
+                        nombreFruit++;
+                    }
+                } else if (caseDirection == FRUIT_SPECIAL){
+                    listEntite[i]->evolutionScore = scoreFruitSpecial;
+                    listEntite[i]->nombreFruitSpecialMange++;
+                    ajouterClasseTerrain(terrain, listEntite[i]->num, tailleAjouterFruitSpecial);
+                    listEntite[i]->longueur++;
+                    tempApparition = -1;
+                }
+
+                //On déplace la tête
+                deplacerDirection(listEntite[i]);
+
+                pthread_mutex_unlock(listMutex + i);
+
+                //On pose une partie du corp du serpent
+                terrain->tableau[listEntite[i]->posX][listEntite[i]->posY] = listEntite[i]->longueur + CLASSE_SERPENT * listEntite[i]->num;
+
+                listEntite[i]->distanceParcourue++;
+            }
+            #pragma endregion
+
+            #pragma region FRUIT SPECIAL
+            //On fait les tests sur le fruit spécial
+            if (tempApparition == -1 && rand() % FREQ_APPARITION_FRUIT_SPECIAL * FREQ_AFFICHAGE == 0){
+                tempApparition = time(NULL);
+                ajouterAleatoireTerrain(terrain, 1, FRUIT_SPECIAL, &posFruitSpecialX, &posFruitSpecialY);
+            } else if (tempApparition != -1 && difftime(time(NULL), tempApparition) > TEMP_APPARITION_FRUIT_SPECIAL){
+                terrain->tableau[posFruitSpecialX][posFruitSpecialY] = VIDE;
+                tempApparition = -1;
+            }
+            #pragma endregion
         }
         #pragma endregion
 
         #pragma region AFFICHAGE
 
-        afficherPartie(terrain, listEntite, nombreEntite);
+        if (fenetre == MENU) {
+            afficherTitre(longueur);
+        } else if (fenetre == PSEUDO) {
+            afficherPseudo(listEntite, nombreEntite, rangPseudo, numEntitePseudo);
+        } else if (fenetre == DECOMPTE) {
+            afficherDecompte(terrain, listEntite, nombreEntite, tempsDebut);
+        } else if (fenetre == JEU) {
+            afficherPartie(terrain, listEntite, nombreEntite);
+        } else if (fenetre == FIN) {
+            afficherFin(longueur, listEntite, nombreEntite);
+        }
 
         #pragma endregion
 
-        #pragma region SCORE
-        //Calculs des scores
-        for (int i = 0; i < nombreEntite; i++){
-            listEntite[i]->score += listEntite[i]->evolutionScore;
-            listEntite[i]->evolutionScore = 0;
-        }
-        #pragma endregion
+        if (fenetre == JEU) {
 
-        #pragma region TESTS FIN
-        //Test fin de partie
-        //Si on a mangé tous les fruits
-        if (nombreCaseObj(terrain, FRUIT) == 0){
-            launched = false;
+            #pragma region TESTS FIN
+            //Test fin de partie
+            //Si on a mangé tous les fruits
+            if (nombreCaseObj(terrain, FRUIT) == 0){
+                fenetre = FIN;
+            }
+            //Si plus aucun joueur n'est en vie
+            if (nombreJoueurEnVie == 0){
+                fenetre = FIN;
+            }
+            //Si toutes les cases sont occupées par des objets solides
+            if (nombreCaseObj(terrain, VIDE) + nombreCaseObj(terrain, FRUIT) + nombreCaseObj(terrain, FRUIT_SPECIAL) == 0){
+                fenetre = FIN;
+            }
+            #pragma endregion
+
+            if (fenetre == FIN) {
+                #pragma region GESTION FICHIER
+                //Enregistrement fichier
+                for (int i = 0; i < nombreEntite; i++){
+                    ecrire(CHEMIN_SCORE, listEntite[i]->pseudo, listEntite[i]->score, graine);
+                }
+                #pragma endregion
+            }
         }
-        //Si plus aucun joueur n'est en vie
-        if (nombreJoueurEnVie == 0){
-            launched = false;
-        }
-        //Si toutes les cases sont occupées par des objets solides
-        if (nombreCaseObj(terrain, VIDE) + nombreCaseObj(terrain, FRUIT) + nombreCaseObj(terrain, FRUIT_SPECIAL) == 0){
-            launched = false;
-        }
-        #pragma endregion
 
         //Temps de pause pour soulager le cpu
-        usleep(1000000 / FREQ_DEPLACEMENT);
-    }
-
-    #pragma region AFFICHAGE FIN
-
-    //Affichage vainqueur
-    afficherFin(terrain->longueur, listEntite, nombreEntite);
-
-    #pragma endregion
-
-    #pragma region GESTION FICHIER
-    //Enregistrement fichier
-    for (int i = 0; i < nombreEntite; i++){
-        ecrire(CHEMIN_SCORE, listEntite[i]->pseudo, listEntite[i]->score, graine);    
+        usleep(1000000 / FREQ_AFFICHAGE);
     }
     #pragma endregion
 

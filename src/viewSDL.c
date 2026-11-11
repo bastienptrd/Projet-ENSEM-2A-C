@@ -105,31 +105,55 @@ void afficherTitre(int longueur){
     // On choisit la couleur blanche
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-    SDL_SetRenderScale(renderer, 3.0f, 3.0f);
+    SDL_SetRenderScale(renderer, 12.0f, 12.0f);
     SDL_RenderDebugText(renderer, 10, 10, "SNAKE");
+    SDL_SetRenderScale(renderer, 3.0f, 3.0f);
+    SDL_RenderDebugText(renderer, 10, 100, "Appuyez sur espace");
     SDL_SetRenderScale(renderer, 1.0f, 1.0f);
 
     // On met à jour la fenêtre
     SDL_RenderPresent(renderer);
 }
-void afficherDecompte(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
 
-    for (int i = 0; i < NOMBRE_DECOMPTE; i++){
+void afficherPseudo(entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite, int i, int numEntite) {
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    SDL_FRect rect;
+    rect.h = 8;
+    rect.w = 1;
+    rect.x = 10 + 8 * i;
+    rect.y = 108 + 30 * numEntite + 1;
 
-        affichageTerrain(terrain, listEntite, nombreEntite);
+    // On choisit la couleur blanche
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_SetRenderScale(renderer, 12.0f, 12.0f);
+    SDL_RenderDebugText(renderer, 10, 10, "SNAKE");
+    SDL_SetRenderScale(renderer, 3.0f, 3.0f);
 
-        char message[5];
-        sprintf(message, " %d ", NOMBRE_DECOMPTE - i);
-        SDL_SetRenderScale(renderer, 3.0f, 3.0f);
-        SDL_RenderDebugText(renderer, 10, 10, message);
-        SDL_SetRenderScale(renderer, 1.0f, 1.0f);
-        SDL_RenderPresent(renderer);
-
-        sleep(TEMPS_CHIFFRES_DECOMPTE);
+    SDL_RenderFillRect(renderer, &rect);
+    for (int j = 0; j < nombreEntite; j++) {
+        SDL_RenderDebugText(renderer, 10, 100 + 30 * j, "Entrez pseudo : ");
+        SDL_RenderDebugText(renderer, 10, 110 + 30 * j, listEntite[j]->pseudo);
     }
 
+    SDL_SetRenderScale(renderer, 1.0f, 1.0f);
+    SDL_RenderPresent(renderer);
+}
+
+void afficherDecompte(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite, time_t tempsDebut){
+    affichageTerrain(terrain, listEntite, nombreEntite);
+
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+    int i = difftime(time(NULL), tempsDebut) / TEMPS_CHIFFRES_DECOMPTE;
+
+    char message[5];
+    sprintf(message, " %d ", NOMBRE_DECOMPTE - i);
+    SDL_SetRenderScale(renderer, 3.0f, 3.0f);
+    SDL_RenderDebugText(renderer, 10, 10, message);
+    SDL_SetRenderScale(renderer, 1.0f, 1.0f);
+    SDL_RenderPresent(renderer);
 }
 void afficherPartie(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     affichageTerrain(terrain, listEntite, nombreEntite);
@@ -212,17 +236,7 @@ void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombr
         sprintf(message, "Distance parcouru : %d\n\n", listEntite[i]->distanceParcourue);
         SDL_RenderDebugText(renderer, 10, 80 + 100 * i, message);
     }
-
     SDL_RenderPresent(renderer);
-    SDL_Event event;
-    bool loop = true;
-    while (loop) {
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_EVENT_QUIT) {
-                loop = false;
-            }
-        }
-    }
 }
 
 void detruireWindow(){

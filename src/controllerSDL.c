@@ -1,4 +1,6 @@
 #include <stdio.h>
+
+#include "../include/utilitaire.h"
 #include "../include/controller.h"
 #include "../include/configSDL.h"
 
@@ -49,8 +51,95 @@ void lirePseudo(char pseudo[TAILLE_MAX_PSEUDO]){
     SDL_StopTextInput(window);
 }
 
-void gererEvent(entites * entites){
-    
+void gererEventMenu(entites * entites, int * fenetre) {
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_EVENT_QUIT){
+            *(entites->launched) = false;
+        } else if (event.type == SDL_EVENT_KEY_DOWN) {
+            if (event.key.key == SDLK_SPACE) {
+                *fenetre = PSEUDO;
+            }
+        }
+    }
+}
+
+void gererEventPseudo(entites * entites, int * fenetre, int * i, int * numEntite) {
+    SDL_StartTextInput(window);
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_EVENT_QUIT){
+            *(entites->launched) = false;
+        } else if (event.type == SDL_EVENT_TEXT_INPUT && *i < 20){
+            entites->listEntite[*numEntite]->pseudo[*i] = event.text.text[0];
+            (*i)++;
+        } else if (event.type == SDL_EVENT_KEY_DOWN){
+            if (event.key.key == SDLK_RETURN){
+                (*numEntite)++;
+                *i = 0;
+                if (*numEntite >= entites->nombreEntite) {
+                    *fenetre = DECOMPTE;
+                }
+            } else if (event.key.key == SDLK_BACKSPACE) {
+                *i = max(0, *i - 1);
+                entites->listEntite[*numEntite]->pseudo[*i] = '\0';
+            } else if (event.key.key == SDLK_UP) {
+                *numEntite = max(0, *numEntite - 1);
+                *i = strlen(entites->listEntite[*numEntite]->pseudo);
+            } else if (event.key.key == SDLK_DOWN) {
+                *numEntite = min(entites->nombreEntite - 1, *numEntite + 1);
+                *i = strlen(entites->listEntite[*numEntite]->pseudo);
+            }
+        }
+    }
+    SDL_StopTextInput(window);
+}
+void gererEventDecompte(entites * entites, int * fenetre, time_t tempsDebut){
+    UNUSED(fenetre);
+
+    entite * joueur1 = entites->listEntite[0];
+    entite * joueur2 = entites->listEntite[1];
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_EVENT_QUIT){
+            *(entites->launched) = false;
+        } else if (event.type == SDL_EVENT_KEY_DOWN){
+            if (event.key.key == (SDL_Keycode)TOUCHE_HAUT){
+                joueur1->direction = HAUT;
+            }
+            else if (event.key.key == (SDL_Keycode)TOUCHE_BAS){
+                joueur1->direction = BAS;
+            }
+            else if (event.key.key == (SDL_Keycode)TOUCHE_DROITE){
+                joueur1->direction = DROITE;
+            }
+            else if (event.key.key == (SDL_Keycode)TOUCHE_GAUCHE){
+                joueur1->direction = GAUCHE;
+            }
+
+            if (entites->nombreEntite == 1){
+                continue;
+            }
+
+            if (event.key.key == SDLK_UP ){
+                joueur2->direction = HAUT;
+            }
+            else if (event.key.key == SDLK_DOWN){
+                joueur2->direction = BAS;
+            }
+            else if (event.key.key == SDLK_RIGHT){
+                joueur2->direction = DROITE;
+            }
+            else if (event.key.key == SDLK_LEFT){
+                joueur2->direction = GAUCHE;
+            }
+        }
+    }
+    if (difftime(time(NULL), tempsDebut) >= NOMBRE_DECOMPTE * TEMPS_CHIFFRES_DECOMPTE) {
+        *fenetre = JEU;
+    }
+}
+
+void gererEventJeu(entites * entites, int * fenetre){
+    UNUSED(fenetre);
+
     entite * joueur1 = entites->listEntite[0];
     entite * joueur2 = entites->listEntite[1];
 
@@ -60,16 +149,16 @@ void gererEvent(entites * entites){
         } else if (event.type == SDL_EVENT_KEY_DOWN){
             
             pthread_mutex_lock(&dmutexjoueur1);
-            if (event.key.key == (SDL_Keycode)TOUCHE_HAUT && (joueur1->direction != BAS || entites->pass)){
+            if (event.key.key == (SDL_Keycode)TOUCHE_HAUT && joueur1->direction != BAS){
                 joueur1->direction = HAUT;
             }
-            else if (event.key.key == (SDL_Keycode)(TOUCHE_BAS) && (joueur1->direction != HAUT || entites->pass)){
+            else if (event.key.key == (SDL_Keycode)TOUCHE_BAS && joueur1->direction != HAUT){
                 joueur1->direction = BAS;
             }
-            else if (event.key.key == (SDL_Keycode)(TOUCHE_DROITE) && (joueur1->direction != GAUCHE || entites->pass)){
+            else if (event.key.key == (SDL_Keycode)TOUCHE_DROITE && joueur1->direction != GAUCHE){
                 joueur1->direction = DROITE;
             }
-            else if (event.key.key == (SDL_Keycode)(TOUCHE_GAUCHE) && (joueur1->direction != DROITE || entites->pass)){
+            else if (event.key.key == (SDL_Keycode)TOUCHE_GAUCHE && joueur1->direction != DROITE){
                 joueur1->direction = GAUCHE;
             }
             pthread_mutex_unlock(&dmutexjoueur1);
@@ -79,19 +168,28 @@ void gererEvent(entites * entites){
             }
 
             pthread_mutex_lock(&dmutexjoueur2);
-            if (event.key.key == SDLK_UP && (joueur2->direction != BAS || entites->pass)){
+            if (event.key.key == SDLK_UP && joueur2->direction != BAS){
                 joueur2->direction = HAUT;
             }
-            else if (event.key.key == SDLK_DOWN && (joueur2->direction != HAUT || entites->pass)){
+            else if (event.key.key == SDLK_DOWN && joueur2->direction != HAUT){
                 joueur2->direction = BAS;
             }
-            else if (event.key.key == SDLK_RIGHT && (joueur2->direction != GAUCHE || entites->pass)){
+            else if (event.key.key == SDLK_RIGHT && joueur2->direction != GAUCHE){
                 joueur2->direction = DROITE;
             }
-            else if (event.key.key == SDLK_LEFT && (joueur2->direction != DROITE || entites->pass)){
+            else if (event.key.key == SDLK_LEFT && joueur2->direction != DROITE){
                 joueur2->direction = GAUCHE;
             }
             pthread_mutex_unlock(&dmutexjoueur2);
+        }
+    }
+}
+
+void gererEventFin(entites * entites, int * fenetre) {
+    UNUSED(fenetre);
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_EVENT_QUIT){
+            *(entites->launched) = false;
         }
     }
 }
