@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include "../include/configTerminal.h"
 #include "../include/view.h"
 #include "../include/utilitaire.h"
 
@@ -9,7 +10,7 @@ void initWindow(){
 }
 
 //Affiche le plateau avec tous ces éléments
-static void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
+static void affichageTerrain(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     //Affichage du terrain et des entites dans le terminal
     for (int i = 0; i < terrain->largeur; i++){
         for (int j = 0; j < terrain->longueur; j++){

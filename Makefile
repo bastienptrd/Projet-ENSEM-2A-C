@@ -60,7 +60,13 @@ DEP = $(OBJ:.o=.d)
 
 EXEC = snake-$(MODE)
 
-.PHONY: all run clean mrproper
+.PHONY: all run clean mrproper terminal sdl
+
+terminal:
+	$(MAKE) MODE=terminal all
+
+sdl:
+	$(MAKE) MODE=sdl all
 
 all: $(EXEC)
 

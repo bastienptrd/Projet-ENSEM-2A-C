@@ -13,6 +13,21 @@ void lirePseudo(char pseudo[TAILLE_MAX_PSEUDO]){
     int i = 0;
     bool launched = true;
     while (launched){
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        // On choisit la couleur blanche
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+        SDL_SetRenderScale(renderer, 3.0f, 3.0f);
+        SDL_RenderDebugText(renderer, 10, 10, "SNAKE");
+        SDL_RenderDebugText(renderer, 10, 30, "Entrez pseudo : ");
+
+        SDL_RenderDebugText(renderer, 10, 50, pseudo);
+
+        SDL_SetRenderScale(renderer, 1.0f, 1.0f);
+        SDL_RenderPresent(renderer);
+
         while (SDL_PollEvent(&event)){
             if (event.type == SDL_EVENT_QUIT){
                 launched = false;
@@ -22,6 +37,9 @@ void lirePseudo(char pseudo[TAILLE_MAX_PSEUDO]){
             } else if (event.type == SDL_EVENT_KEY_DOWN){
                 if (event.key.key == SDLK_RETURN){
                     launched = false;
+                } else if (event.key.key == SDLK_BACKSPACE) {
+                    i--;
+                    pseudo[i] = '\0';
                 }
             }
         }

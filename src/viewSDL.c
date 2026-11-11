@@ -92,9 +92,7 @@ static void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_EN
             SDL_RenderFillRect(renderer, &caseRect);
         }
     }
-    
-    // On met à jour la fenêtre
-    SDL_RenderPresent(renderer);
+
 }
 
 void afficherTitre(int longueur){
@@ -104,48 +102,53 @@ void afficherTitre(int longueur){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    // On choisit la couleur bleue
-    SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+    // On choisit la couleur blanche
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-    int p;
-    SDL_GetWindowSize(window, &p, NULL);
-
-    SDL_FRect rect;
-    rect.x = 0;
-    rect.y = 0;
-    rect.h = 100;
-    rect.w = (float)p;
-
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_SetRenderScale(renderer, 3.0f, 3.0f);
+    SDL_RenderDebugText(renderer, 10, 10, "SNAKE");
+    SDL_SetRenderScale(renderer, 1.0f, 1.0f);
 
     // On met à jour la fenêtre
     SDL_RenderPresent(renderer);
 }
 void afficherDecompte(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
 
-    int windowSizeX = 0;
-    int windowSizeY = 0;
-    SDL_GetWindowSize(window, &windowSizeX, &windowSizeY);
-
-    affichageTerrain(terrain, listEntite, nombreEntite);
-    SDL_FRect rect;
-    rect.x = 0;
-    rect.y = 0;
-    rect.h = POSITION_P_PLATEAU_JEU_Y * windowSizeX;
-    rect.w = POSITION_P_PLATEAU_JEU_Y * windowSizeY;
-
     for (int i = 0; i < NOMBRE_DECOMPTE; i++){
-        rect.x = POSITION_P_PLATEAU_JEU_Y * windowSizeY * i;
-            
-        SDL_SetRenderDrawColor(renderer, 255 * (i <= 1) , 255 * (i >= 1), 0, 255);
-        SDL_RenderFillRect(renderer, &rect);
+
+        affichageTerrain(terrain, listEntite, nombreEntite);
+
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+        char message[5];
+        sprintf(message, " %d ", NOMBRE_DECOMPTE - i);
+        SDL_SetRenderScale(renderer, 3.0f, 3.0f);
+        SDL_RenderDebugText(renderer, 10, 10, message);
+        SDL_SetRenderScale(renderer, 1.0f, 1.0f);
         SDL_RenderPresent(renderer);
+
         sleep(TEMPS_CHIFFRES_DECOMPTE);
     }
 
 }
 void afficherPartie(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     affichageTerrain(terrain, listEntite, nombreEntite);
+
+    for (int i = 0; i < nombreEntite; i++){
+        char message[100];
+        if (listEntite[i]->evolutionScore == 0) {
+            sprintf(message, "Score %s : %d", listEntite[i]->pseudo, listEntite[i]->score);
+        } else {
+            sprintf(message, "Score %s : %d + %d", listEntite[i]->pseudo, listEntite[i]->score, listEntite[i]->evolutionScore);
+        }
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+        SDL_SetRenderScale(renderer, 3.0f, 3.0f);
+        SDL_RenderDebugText(renderer, 10, 10 + 10 * i, message);
+        SDL_SetRenderScale(renderer, 1.0f, 1.0f);
+    }
+    // On met à jour la fenêtre
+    SDL_RenderPresent(renderer);
 }
 void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
     UNUSED(longueur);
@@ -156,10 +159,13 @@ void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombr
             nombreJoueurEnVie++;
         }
     }
-    
+
     if (nombreJoueurEnVie == 0 && nombreEntite >= 2){
         SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
         SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderScale(renderer, 3.0f, 3.0f);
+        SDL_RenderDebugText(renderer, 10, 10, "Partie nulle");
     } else if (nombreEntite >= 2){
         int vainqueur = 0;
         int scoreMax = listEntite[0]->score;
@@ -169,17 +175,54 @@ void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombr
                 vainqueur = i;
             }
         }
+        char message[TAILLE_MAX_PSEUDO + 10];
+        sprintf(message, " %s gagne ", listEntite[vainqueur]->pseudo);
         SDL_SetRenderDrawColor(renderer, couleurs[vainqueur].r, couleurs[vainqueur].g, couleurs[vainqueur].b, couleurs[vainqueur].a);
         SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderScale(renderer, 3.0f, 3.0f);
+        SDL_RenderDebugText(renderer, 10, 10, message);
     } else if (nombreJoueurEnVie == 0){
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderScale(renderer, 3.0f, 3.0f);
+        SDL_RenderDebugText(renderer, 10, 10, "Defaite");
     } else {
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
         SDL_RenderClear(renderer);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderScale(renderer, 3.0f, 3.0f);
+        SDL_RenderDebugText(renderer, 10, 10, "Victoire");
     }
+
+    SDL_SetRenderScale(renderer, 2.0f, 2.0f);
+    for (int i = 0; i < nombreEntite; i++){
+        char message[100];
+        sprintf(message, "Joueur : %s\n", listEntite[i]->pseudo);
+        SDL_RenderDebugText(renderer, 10, 30 + 100 * i, message);
+        sprintf(message, "Score : %d\n", listEntite[i]->score);
+        SDL_RenderDebugText(renderer, 10, 40 + 100 * i, message);
+        sprintf(message, "Taille serpent : %d\n", listEntite[i]->longueur);
+        SDL_RenderDebugText(renderer, 10, 50 + 100 * i, message);
+        sprintf(message, "Nombre de fruit mange : %d\n", listEntite[i]->nombreFruitMange);
+        SDL_RenderDebugText(renderer, 10, 60 + 100 * i, message);
+        sprintf(message, "Nombre de fruit special mange : %d\n", listEntite[i]->nombreFruitSpecialMange);
+        SDL_RenderDebugText(renderer, 10, 70 + 100 * i, message);
+        sprintf(message, "Distance parcouru : %d\n\n", listEntite[i]->distanceParcourue);
+        SDL_RenderDebugText(renderer, 10, 80 + 100 * i, message);
+    }
+
     SDL_RenderPresent(renderer);
-    sleep(3);
+    SDL_Event event;
+    bool loop = true;
+    while (loop) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_EVENT_QUIT) {
+                loop = false;
+            }
+        }
+    }
 }
 
 void detruireWindow(){
