@@ -2,10 +2,10 @@
 
 #include "entite.h"
 
-void initialiserController(entites * entites);
-void gererEventMenu(entites * entites, int * fenetre);
-void gererEventPseudo(entites * entites, int * fenetre, int * i, int * indexEntitePseudo);
-void gererEventDecompte(entites * entites, int * fenetre, time_t tempsDebut);
-void gererEventJeu(entites * entites, int * fenetre);
-void gererEventFin(entites * entites, int * fenetre);
+void initialiserController(donneePartie * partie);
+void gererEventMenu(donneePartie * partie, int * fenetre);
+void gererEventPseudo(donneePartie * partie, int * fenetre, int * i, int * indexEntitePseudo);
+void gererEventDecompte(donneePartie * partie, int * fenetre);
+void gererEventJeu(donneePartie * partie, int * fenetre);
+void gererEventFin(donneePartie * partie, int * fenetre);
 void fermerController();

@@ -24,16 +24,16 @@ entite * creerEntite(int num){
 }
 
 //Donne la case située devant l'entité
-int caseSuivante(entite * ent, int ** terrain){
+int caseSuivante(entite * ent, terrain * terrain){
     int caseObserve = 0;
     if (ent->direction == HAUT){
-        caseObserve = terrain[ent->posX - 1][ent->posY];
+        caseObserve = terrain->tableau[ent->posX - 1][ent->posY];
     } else if (ent->direction == BAS){
-        caseObserve = terrain[ent->posX + 1][ent->posY];
+        caseObserve = terrain->tableau[ent->posX + 1][ent->posY];
     } else if (ent->direction == DROITE){
-        caseObserve = terrain[ent->posX][ent->posY + 1];
+        caseObserve = terrain->tableau[ent->posX][ent->posY + 1];
     } else if (ent->direction == GAUCHE){
-        caseObserve = terrain[ent->posX][ent->posY - 1];
+        caseObserve = terrain->tableau[ent->posX][ent->posY - 1];
     }
     return caseObserve;
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <stdbool.h>
 #include "config.h"
+#include "terrain.h"
 
 typedef struct{
     char pseudo[TAILLE_MAX_PSEUDO];
@@ -20,14 +21,31 @@ typedef struct{
     int nombreFruitSpecialMange;
 } entite;
 
-typedef struct{
+typedef struct {
+    terrain * terrain;
     entite * listEntite[NOMBRE_MAX_ENTITE];
     int nombreEntite;
     bool pass;
-    bool * launched;
-} entites;
+
+    // Boucle
+    bool launched;
+    time_t tempsDebut;
+
+    // Fruit spécial
+    time_t tempApparition;
+    int posFruitSpecialX;
+    int posFruitSpecialY;
+
+    // Paramètre de la partie
+    bool fruitInfinie;
+    int nombreFruitAjouter;
+    int tailleAjouterFruit;
+    int tailleAjouterFruitSpecial;
+    int scoreFruit;
+    int scoreFruitSpecial;
+}donneePartie;
 
 entite * creerEntite(int num);
-int caseSuivante(entite * ent, int ** terrain);
+int caseSuivante(entite * ent, terrain * terrain);
 void deplacerDirection(entite * ent);
 void freeEntite(entite * ent);

@@ -6,62 +6,62 @@
 
 static SDL_Event event;
 
-void initialiserController(entites * entites){
-    UNUSED(entites);
+void initialiserController(donneePartie * partie){
+    UNUSED(partie);
 }
 
-void gererEventMenu(entites * entites, int * fenetre) {
+void gererEventMenu(donneePartie * partie, int * fenetre) {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_EVENT_QUIT){
-            *(entites->launched) = false;
+            partie->launched = false;
         } else if (event.type == SDL_EVENT_KEY_DOWN) {
             if (event.key.key == SDLK_SPACE) {
                 *fenetre = PSEUDO;
             } else if (event.key.key == SDLK_S) {
-                entites->nombreEntite = 1;
+                partie->nombreEntite = 1;
                 *fenetre = PSEUDO;
             }
         }
     }
 }
 
-void gererEventPseudo(entites * entites, int * fenetre, int * indexLettrePseudo, int * indexEntitePseudo) {
+void gererEventPseudo(donneePartie * partie, int * fenetre, int * indexLettrePseudo, int * indexEntitePseudo) {
     SDL_StartTextInput(window);
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_EVENT_QUIT){
-            *(entites->launched) = false;
+            partie->launched = false;
         } else if (event.type == SDL_EVENT_TEXT_INPUT && *indexLettrePseudo < 20){
-            entites->listEntite[*indexEntitePseudo]->pseudo[*indexLettrePseudo] = event.text.text[0];
+            partie->listEntite[*indexEntitePseudo]->pseudo[*indexLettrePseudo] = event.text.text[0];
             (*indexLettrePseudo)++;
         } else if (event.type == SDL_EVENT_KEY_DOWN){
             if (event.key.key == SDLK_RETURN){
                 (*indexEntitePseudo)++;
                 *indexLettrePseudo = 0;
-                if (*indexEntitePseudo >= entites->nombreEntite) {
+                if (*indexEntitePseudo >= partie->nombreEntite) {
                     *fenetre = DECOMPTE;
                 }
             } else if (event.key.key == SDLK_BACKSPACE) {
                 *indexLettrePseudo = max(0, *indexLettrePseudo - 1);
-                entites->listEntite[*indexEntitePseudo]->pseudo[*indexLettrePseudo] = '\0';
+                partie->listEntite[*indexEntitePseudo]->pseudo[*indexLettrePseudo] = '\0';
             } else if (event.key.key == SDLK_UP) {
                 *indexEntitePseudo = max(0, *indexEntitePseudo - 1);
-                *indexLettrePseudo = strlen(entites->listEntite[*indexEntitePseudo]->pseudo);
+                *indexLettrePseudo = strlen(partie->listEntite[*indexEntitePseudo]->pseudo);
             } else if (event.key.key == SDLK_DOWN) {
-                *indexEntitePseudo = min(entites->nombreEntite - 1, *indexEntitePseudo + 1);
-                *indexLettrePseudo = strlen(entites->listEntite[*indexEntitePseudo]->pseudo);
+                *indexEntitePseudo = min(partie->nombreEntite - 1, *indexEntitePseudo + 1);
+                *indexLettrePseudo = strlen(partie->listEntite[*indexEntitePseudo]->pseudo);
             }
         }
     }
     SDL_StopTextInput(window);
 }
-void gererEventDecompte(entites * entites, int * fenetre, time_t tempsDebut){
+void gererEventDecompte(donneePartie * partie, int * fenetre){
     UNUSED(fenetre);
 
-    entite * joueur1 = entites->listEntite[0];
-    entite * joueur2 = entites->listEntite[1];
+    entite * joueur1 = partie->listEntite[0];
+    entite * joueur2 = partie->listEntite[1];
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_EVENT_QUIT){
-            *(entites->launched) = false;
+            partie->launched = false;
         } else if (event.type == SDL_EVENT_KEY_DOWN){
             if (event.key.key == (SDL_Keycode)TOUCHE_HAUT){
                 joueur1->direction = HAUT;
@@ -76,7 +76,7 @@ void gererEventDecompte(entites * entites, int * fenetre, time_t tempsDebut){
                 joueur1->direction = GAUCHE;
             }
 
-            if (entites->nombreEntite == 1){
+            if (partie->nombreEntite == 1){
                 continue;
             }
 
@@ -94,20 +94,20 @@ void gererEventDecompte(entites * entites, int * fenetre, time_t tempsDebut){
             }
         }
     }
-    if (difftime(time(NULL), tempsDebut) >= NOMBRE_DECOMPTE * TEMPS_CHIFFRES_DECOMPTE) {
+    if (difftime(time(NULL), partie->tempsDebut) >= NOMBRE_DECOMPTE * TEMPS_CHIFFRES_DECOMPTE) {
         *fenetre = JEU;
     }
 }
 
-void gererEventJeu(entites * entites, int * fenetre){
+void gererEventJeu(donneePartie * partie, int * fenetre){
     UNUSED(fenetre);
 
-    entite * joueur1 = entites->listEntite[0];
-    entite * joueur2 = entites->listEntite[1];
+    entite * joueur1 = partie->listEntite[0];
+    entite * joueur2 = partie->listEntite[1];
 
     while (SDL_PollEvent(&event)){
         if (event.type == SDL_EVENT_QUIT){
-            *(entites->launched) = false;
+            partie->launched = false;
         } else if (event.type == SDL_EVENT_KEY_DOWN){
             
             pthread_mutex_lock(&dmutexjoueur1);
@@ -125,7 +125,7 @@ void gererEventJeu(entites * entites, int * fenetre){
             }
             pthread_mutex_unlock(&dmutexjoueur1);
 
-            if (entites->nombreEntite == 1){
+            if (partie->nombreEntite == 1){
                 continue;
             }
 
@@ -147,11 +147,11 @@ void gererEventJeu(entites * entites, int * fenetre){
     }
 }
 
-void gererEventFin(entites * entites, int * fenetre) {
+void gererEventFin(donneePartie * partie, int * fenetre) {
     UNUSED(fenetre);
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_EVENT_QUIT){
-            *(entites->launched) = false;
+            partie->launched = false;
         }
     }
 }

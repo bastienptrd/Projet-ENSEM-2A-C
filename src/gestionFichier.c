@@ -57,7 +57,7 @@ void ecrire(char * fichier, char * pseudo, int score, int graine){
     char buffer[80];
 
     time_t moment = time(NULL);
-    struct tm *info = localtime(&moment);
+    struct tm * info = localtime(&moment);
     strftime(buffer, sizeof(buffer), "%d/%m/%Y à %H:%M:%S", info);
 
 	fprintf(f, "%s à fait %d le %s sur la graine %d\n", pseudo, score, buffer, graine);

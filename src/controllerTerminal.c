@@ -29,30 +29,30 @@ static void restaurerTerminal(void)
 //Récupère les entrées clavier
 static void *lireClavier(void *arg)
 {
-    entites * ents = arg;
-    entite * joueur1 = ents->listEntite[0];
-    entite * joueur2 = ents->listEntite[1];
+    donneePartie * partie = arg;
+    entite * joueur1 = partie->listEntite[0];
+    entite * joueur2 = partie->listEntite[1];
 
-    while (*(ents->launched)) {
+    while (partie->launched) {
         char c = getchar();
 
         if (c != EOF) {
             pthread_mutex_lock(&dmutexjoueur1);
-            if (c == TOUCHE_HAUT && (joueur1->direction != BAS || ents->pass)){
+            if (c == TOUCHE_HAUT && (joueur1->direction != BAS || partie->pass)){
                 joueur1->direction = HAUT;
             }
-            else if (c == TOUCHE_BAS && (joueur1->direction != HAUT || ents->pass)){
+            else if (c == TOUCHE_BAS && (joueur1->direction != HAUT || partie->pass)){
                 joueur1->direction = BAS;
             }
-            else if (c == TOUCHE_DROITE && (joueur1->direction != GAUCHE || ents->pass)){
+            else if (c == TOUCHE_DROITE && (joueur1->direction != GAUCHE || partie->pass)){
                 joueur1->direction = DROITE;
             }
-            else if (c == TOUCHE_GAUCHE && (joueur1->direction != DROITE || ents->pass)){
+            else if (c == TOUCHE_GAUCHE && (joueur1->direction != DROITE || partie->pass)){
                 joueur1->direction = GAUCHE;
             }
             pthread_mutex_unlock(&dmutexjoueur1);
 
-            if (ents->nombreEntite == 1){
+            if (partie->nombreEntite == 1){
                 continue;
             }
 
@@ -65,16 +65,16 @@ static void *lireClavier(void *arg)
             }
             pthread_mutex_lock(&dmutexjoueur2);
 
-            if (c == 'A' && (joueur2->direction != BAS || ents->pass)){
+            if (c == 'A' && (joueur2->direction != BAS || partie->pass)){
                 joueur2->direction = HAUT;
             }
-            else if (c == 'B' && (joueur2->direction != HAUT || ents->pass)){
+            else if (c == 'B' && (joueur2->direction != HAUT || partie->pass)){
                 joueur2->direction = BAS;
             }
-            else if (c == 'C' && (joueur2->direction != GAUCHE || ents->pass)){
+            else if (c == 'C' && (joueur2->direction != GAUCHE || partie->pass)){
                 joueur2->direction = DROITE;
             }
-            else if (c == 'D' && (joueur2->direction != DROITE || ents->pass)){
+            else if (c == 'D' && (joueur2->direction != DROITE || partie->pass)){
                 joueur2->direction = GAUCHE;
             }
             pthread_mutex_unlock(&dmutexjoueur2);
@@ -88,41 +88,40 @@ static void *lireClavier(void *arg)
 }
 
 
-void initialiserController(entites * entites){
+void initialiserController(donneePartie * partie){
     initialiserTerminal();
 
     //Recuperation des entrées clavier
-    pthread_create(&clavier, NULL, lireClavier, entites);
+    pthread_create(&clavier, NULL, lireClavier, partie);
 }
 
-void gererEventMenu(entites * entites, int * fenetre){
-    UNUSED(entites);
+void gererEventMenu(donneePartie * partie, int * fenetre){
+    UNUSED(partie);
     *fenetre = PSEUDO;
 }
 
-void gererEventPseudo(entites * entites, int * fenetre, int * indexLettrePseudo, int * indexEntitePseudo) {
+void gererEventPseudo(donneePartie * partie, int * fenetre, int * indexLettrePseudo, int * indexEntitePseudo) {
     UNUSED(indexLettrePseudo);
 
     printf("Entrez votre pseudo joueur %d : ", *indexEntitePseudo + 1);
-    scanf("%s", entites->listEntite[*indexEntitePseudo]->pseudo);
+    scanf("%s", partie->listEntite[*indexEntitePseudo]->pseudo);
     (*indexEntitePseudo)++;
-    if (*indexEntitePseudo == entites->nombreEntite) {
+    if (*indexEntitePseudo == partie->nombreEntite) {
         *fenetre = DECOMPTE;
     }
 }
 
-void gererEventDecompte(entites * entites, int * fenetre, time_t tempsDebut){
-    UNUSED(entites);
-    UNUSED(tempsDebut);
+void gererEventDecompte(donneePartie * partie, int * fenetre){
+    UNUSED(partie);
     *fenetre = JEU;
 }
-void gererEventJeu(entites * entites, int * fenetre){
-    UNUSED(entites);
+void gererEventJeu(donneePartie * partie, int * fenetre){
+    UNUSED(partie);
     UNUSED(fenetre);
 }
-void gererEventFin(entites * entites, int * fenetre){
+void gererEventFin(donneePartie * partie, int * fenetre){
     UNUSED(fenetre);
-    *(entites->launched) = false;
+    partie->launched = false;
 }
 
 void fermerController(){

@@ -10,20 +10,20 @@ void initWindow(){
 }
 
 //Affiche le plateau avec tous ces éléments
-static void affichageTerrain(terrain * terrain, entites * entites){
+static void affichageTerrain(donneePartie * partie){
     //Affichage du terrain et des entites dans le terminal
-    for (int i = 0; i < terrain->largeur; i++){
-        for (int j = 0; j < terrain->longueur; j++){
+    for (int i = 0; i < partie->terrain->largeur; i++){
+        for (int j = 0; j < partie->terrain->longueur; j++){
 
             //CaseVide permet de suivre si une entité a été affichée
             bool caseVide = true;
 
             //On parcourt l'ensemble des entités
-            for (int k = 0; k < entites->nombreEntite; k++){
+            for (int k = 0; k < partie->nombreEntite; k++){
 
                 //Si une entité est présente à ces coordonnées
-                if (entites->listEntite[k]->posX == i && entites->listEntite[k]->posY == j){
-                    printf("%d", entites->listEntite[k]->num);
+                if (partie->listEntite[k]->posX == i && partie->listEntite[k]->posY == j){
+                    printf("%d", partie->listEntite[k]->num);
                     caseVide = false;
                 }
             }
@@ -34,17 +34,17 @@ static void affichageTerrain(terrain * terrain, entites * entites){
             }
 
             //Sinon, on dessine le terrain
-            if (terrain->tableau[i][j] == VIDE){
+            if (partie->terrain->tableau[i][j] == VIDE){
                 printf("%c", CHAR_VIDE);
-            } else if (terrain->tableau[i][j] == MUR){
+            } else if (partie->terrain->tableau[i][j] == MUR){
                 printf("%c", CHAR_MURS);
-            } else if (terrain->tableau[i][j] == OBSTACLE){
+            } else if (partie->terrain->tableau[i][j] == OBSTACLE){
                 printf("%c", CHAR_OBSTACLES);
-            } else if (terrain->tableau[i][j] == FRUIT){
+            } else if (partie->terrain->tableau[i][j] == FRUIT){
                 printf("%c", CHAR_FRUITS);
-            } else if (terrain->tableau[i][j] == FRUIT_SPECIAL){
+            } else if (partie->terrain->tableau[i][j] == FRUIT_SPECIAL){
                 printf("%c", CHAR_FRUIT_SPECIAL);
-            } else if (terrain->tableau[i][j] > 0) {
+            } else if (partie->terrain->tableau[i][j] > 0) {
                 printf("%c", CHAR_SERPENT);
             }
         }
@@ -90,62 +90,60 @@ void afficherTitre(int longueur){
     printfLongueur("", longueur, '=');
 }
 
-void afficherPseudo(entites * entites, int indexLettrePseudo, int numEntite) {
-    UNUSED(entites);
+void afficherPseudo(donneePartie * partie, int indexLettrePseudo, int numEntite) {
+    UNUSED(partie);
     UNUSED(indexLettrePseudo);
     UNUSED(numEntite);
 }
 
 //Affiche le moment du décompte
-void afficherDecompte(terrain * terrain, entites * entites, time_t tempsDebut){
-    UNUSED(tempsDebut);
-
+void afficherDecompte(donneePartie * partie){
     clearAffichage();
     for (int i = NOMBRE_DECOMPTE; i > 0; i--){
         clearAffichage();
         char message[5];
         sprintf(message, " %d ", i);
-        printfLongueur(message, terrain->longueur, '=');
-        affichageTerrain(terrain, entites);
+        printfLongueur(message, partie->terrain->longueur, '=');
+        affichageTerrain(partie);
         sleep(TEMPS_CHIFFRES_DECOMPTE);
     }
 }
 
 //Affiche tous les éléments en milieu de partie
-void afficherPartie(terrain * terrain, entites * entites){
+void afficherPartie(donneePartie * partie){
     clearAffichage();
-    for (int i = 0; i < entites->nombreEntite; i++){
-        printf("Score %s : %d", entites->listEntite[i]->pseudo, entites->listEntite[i]->score);
-        if (entites->listEntite[i]->evolutionScore > 0){
-            printf(" + %d", entites->listEntite[i]->evolutionScore);
+    for (int i = 0; i < partie->nombreEntite; i++){
+        printf("Score %s : %d", partie->listEntite[i]->pseudo, partie->listEntite[i]->score);
+        if (partie->listEntite[i]->evolutionScore > 0){
+            printf(" + %d", partie->listEntite[i]->evolutionScore);
         }
         printf("\n");
     }
-    affichageTerrain(terrain, entites);
+    affichageTerrain(partie);
 }
 
 //Affiche le message de fin
-void afficherFin(int longueur, entites * entites){
+void afficherFin(donneePartie * partie, int longueur){
     int nombreJoueurEnVie = 0;
-    for (int i = 0; i < entites->nombreEntite; i++){
-        if (entites->listEntite[i]->enVie){
+    for (int i = 0; i < partie->nombreEntite; i++){
+        if (partie->listEntite[i]->enVie){
             nombreJoueurEnVie++;
         }
     }
     
-    if (nombreJoueurEnVie == 0 && entites->nombreEntite >= 2){
+    if (nombreJoueurEnVie == 0 && partie->nombreEntite >= 2){
         printfLongueur(" Partie nulle ", longueur, '=');
-    } else if (entites->nombreEntite >= 2){
+    } else if (partie->nombreEntite >= 2){
         int vainqueur = 0;
-        int scoreMax = entites->listEntite[0]->score;
-        for (int i = 1; i < entites->nombreEntite; i++){
-            if (entites->listEntite[i]->score > scoreMax){
-                scoreMax = entites->listEntite[i]->score;
+        int scoreMax = partie->listEntite[0]->score;
+        for (int i = 1; i < partie->nombreEntite; i++){
+            if (partie->listEntite[i]->score > scoreMax){
+                scoreMax = partie->listEntite[i]->score;
                 vainqueur = i;
             }
         }
         char message[30];
-        sprintf(message, " %s gagne ", entites->listEntite[vainqueur]->pseudo);
+        sprintf(message, " %s gagne ", partie->listEntite[vainqueur]->pseudo);
         printfLongueur(message, longueur, '=');
     } else if (nombreJoueurEnVie == 0){
         printfLongueur(" Défaite ", longueur, '=');
@@ -154,13 +152,13 @@ void afficherFin(int longueur, entites * entites){
     }
 
     //Affichage stats
-    for (int i = 0; i < entites->nombreEntite; i++){
-        printf("Joueur : %s\n", entites->listEntite[i]->pseudo);
-        printf("Score : %d\n", entites->listEntite[i]->score);
-        printf("Taille serpent : %d\n", entites->listEntite[i]->longueur);
-        printf("Nombre de fruit mangé : %d\n", entites->listEntite[i]->nombreFruitMange);
-        printf("Nombre de fruit spécial mangé : %d\n", entites->listEntite[i]->nombreFruitSpecialMange);
-        printf("Distance parcouru : %d\n\n", entites->listEntite[i]->distanceParcourue);
+    for (int i = 0; i < partie->nombreEntite; i++){
+        printf("Joueur : %s\n", partie->listEntite[i]->pseudo);
+        printf("Score : %d\n", partie->listEntite[i]->score);
+        printf("Taille serpent : %d\n", partie->listEntite[i]->longueur);
+        printf("Nombre de fruit mangé : %d\n", partie->listEntite[i]->nombreFruitMange);
+        printf("Nombre de fruit spécial mangé : %d\n", partie->listEntite[i]->nombreFruitSpecialMange);
+        printf("Distance parcouru : %d\n\n", partie->listEntite[i]->distanceParcourue);
     }
 }
 

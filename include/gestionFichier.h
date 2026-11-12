@@ -1,4 +1,4 @@
 #pragma once
 
-int** lireTerrain(char *fichier, int *largeur, int* longueur);
+int** lireTerrain(char * fichier, int * largeur, int * longueur);
 void ecrire(char * fichier, char * pseudo, int score, int graine);
