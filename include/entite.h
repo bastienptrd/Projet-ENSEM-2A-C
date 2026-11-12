@@ -30,6 +30,7 @@ typedef struct {
     // Boucle
     bool launched;
     time_t tempsDebut;
+    int graine;
 
     // Fruit spécial
     time_t tempApparition;

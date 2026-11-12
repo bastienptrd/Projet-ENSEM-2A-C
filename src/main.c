@@ -9,40 +9,22 @@
 pthread_mutex_t dmutexjoueur1 = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t dmutexjoueur2 = PTHREAD_MUTEX_INITIALIZER;
 
-int main(){
-    #pragma region INITIALISATION
-
-    int nombreTotalJoueur = 2;
-    int graineDonner = -1;
-
-    pthread_mutex_t listMutex[NOMBRE_MAX_ENTITE];
-    listMutex[0] = dmutexjoueur1;
-    listMutex[1] = dmutexjoueur2;
-
-    donneePartie partie;
-
-    #pragma region INITIALISATION ENTITE
+static void initialiserPartieEntite(donneePartie * partie) {
     //Initialisation entites
+    int indexEntite = 0;
+    entite * joueur1 = creerEntite(indexEntite + 1);
+    partie->listEntite[indexEntite] = joueur1;
+    indexEntite++;
 
-    int nombreEntite = 0;
-
-    entite * joueur1 = creerEntite(nombreEntite + 1);
-    partie.listEntite[nombreEntite] = joueur1;
-    nombreEntite++;
-
-    entite * joueur2 = creerEntite(nombreEntite + 1);
-    partie.listEntite[nombreEntite] = joueur2;
-    nombreEntite++;
-
-    //Choix du nombre de joueurs
-    if (nombreEntite != nombreTotalJoueur) {
-        nombreEntite = nombreTotalJoueur;
+    if (partie->nombreEntite == indexEntite) {
+        return;
     }
 
-    
-    #pragma endregion
+    entite * joueur2 = creerEntite(indexEntite + 1);
+    partie->listEntite[indexEntite] = joueur2;
+}
 
-    #pragma region INITIALISATION TERRAIN
+static void initialiserPartieTerrain(donneePartie * partie) {
     int largeur = LARGEUR_TERRAIN;
     int longueur = LONGEUR_TERRAIN;
 
@@ -51,63 +33,74 @@ int main(){
 
 
     // Initialisation terrain
-    partie.terrain = creerTerrain(largeur, longueur);
-    initTerrain(partie.terrain);
+    partie->terrain = creerTerrain(largeur, longueur);
+    initTerrain(partie->terrain);
     /*terrain * terrain = malloc(sizeof(terrain));
     terrain->tableau = lireTerrain(CHEMIN_TERRAIN, &largeur, &longueur);
     terrain->largeur = largeur;
     terrain->longueur = longueur;*/
 
     //Initialisation du random
-    int graine = time(NULL);
-    if (graineDonner != -1){
-        graine = 0;
-    }
-    srand(graine);
+    partie->graine = time(NULL);
+    srand(partie->graine);
 
     //Ajout des murs
-    ajouterAleatoireTerrain(partie.terrain, nombreMur, OBSTACLE, NULL, NULL);
+    ajouterAleatoireTerrain(partie->terrain, nombreMur, OBSTACLE, NULL, NULL);
 
     //Ajout des serpents
-    for (int i = 0; i < nombreEntite; i++){
+    for (int i = 0; i < partie->nombreEntite; i++){
         //Ajouter le serpent (nécessite 2 case vide)
         int nombreEssai = 0;
         do {
-            ajouterAleatoireTerrain(partie.terrain, 1, VIDE, &(partie.listEntite[i]->posX), &(partie.listEntite[i]->posY));
-            
+            ajouterAleatoireTerrain(partie->terrain, 1, VIDE, &(partie->listEntite[i]->posX), &(partie->listEntite[i]->posY));
+
             //Retourner erreur en cas de situation bloquante pour la position du seprent
             nombreEssai++;
             if (nombreEssai == NOMBRE_ESSAI_MAX){
                 printf("ERREUR : pas assez d'espace pour le serpent");
-                return 1;
+                return;
             }
 
-        } while (partie.terrain->tableau[partie.listEntite[i]->posX][partie.listEntite[i]->posY] != VIDE || caseSuivante(partie.listEntite[i], partie.terrain) != VIDE);
-        
-        //On place le corps du serpents sur le terrain
-        partie.terrain->tableau[partie.listEntite[i]->posX][partie.listEntite[i]->posY] = partie.listEntite[i]->longueur + CLASSE_SERPENT * partie.listEntite[i]->num;
-    }
-    
-    //Ajout des fruits
-    ajouterAleatoireTerrain(partie.terrain, nombreFruit, FRUIT, NULL, NULL);
-    
-    #pragma endregion
+        } while (partie->terrain->tableau[partie->listEntite[i]->posX][partie->listEntite[i]->posY] != VIDE || caseSuivante(partie->listEntite[i], partie->terrain) != VIDE);
 
-    partie.nombreEntite = nombreEntite;
-    partie.pass = false;
+        //On place le corps du serpents sur le terrain
+        partie->terrain->tableau[partie->listEntite[i]->posX][partie->listEntite[i]->posY] = partie->listEntite[i]->longueur + CLASSE_SERPENT * partie->listEntite[i]->num;
+    }
+
+    //Ajout des fruits
+    ajouterAleatoireTerrain(partie->terrain, nombreFruit, FRUIT, NULL, NULL);
+
+    partie->pass = false;
+
+    //Variables fruit spécial
+    partie->tempApparition = -1;
+
+    partie->fruitInfinie = FRUIT_INFINIE;
+    partie->nombreFruitAjouter = NOMBRE_FRUIT_AJOUTER;
+    partie->tailleAjouterFruit = TAILLE_AJOUTEE_FRUIT;
+    partie->tailleAjouterFruitSpecial = TAILLE_AJOUTEE_FRUIT_SPECIAL;
+    partie->scoreFruit = SCORE_FRUIT;
+    partie->scoreFruitSpecial = SCORE_FRUIT_SPECIAL;
+}
+
+int main(){
+    #pragma region INITIALISATION
+
+    pthread_mutex_t listMutex[NOMBRE_MAX_ENTITE];
+    listMutex[0] = dmutexjoueur1;
+    listMutex[1] = dmutexjoueur2;
+
+    // Struct qui va contenir toutes les infos liées au déroulement de la partie
+    donneePartie partie;
 
     //Condition de la boucle principale
     partie.launched = true;
 
-    //Variables fruit spécial
-    partie.tempApparition = -1;
-
-    partie.fruitInfinie = FRUIT_INFINIE;
-    partie.nombreFruitAjouter = NOMBRE_FRUIT_AJOUTER;
-    partie.tailleAjouterFruit = TAILLE_AJOUTEE_FRUIT;
-    partie.tailleAjouterFruitSpecial = TAILLE_AJOUTEE_FRUIT_SPECIAL;
-    partie.scoreFruit = SCORE_FRUIT;
-    partie.scoreFruitSpecial = SCORE_FRUIT_SPECIAL;
+    partie.nombreEntite = NOMBRE_MAX_ENTITE;
+    for (int i = 0; i < NOMBRE_MAX_ENTITE; i++) {
+        partie.listEntite[i] = NULL;
+    }
+    partie.terrain = NULL;
 
     int fenetre = START;
 
@@ -118,7 +111,7 @@ int main(){
     clock_gettime(CLOCK_MONOTONIC, &dernierUpdate);
 
     //Permet d'arreter la boucle au besoin
-    int nombreJoueurEnVie = nombreEntite;
+    int nombreJoueurMort = 0;
 
     #pragma endregion
 
@@ -133,16 +126,21 @@ int main(){
             fenetre = MENU;
         }else if (fenetre == MENU) {
             gererEventMenu(&partie, &fenetre);
+            if (fenetre == PSEUDO) {
+                initialiserPartieEntite(&partie);
+            }
         } else if (fenetre == PSEUDO) {
             gererEventPseudo(&partie, &fenetre, &rangPseudo, &numEntitePseudo);
             if (fenetre == DECOMPTE) {
+
+                initialiserPartieTerrain(&partie);
 
                 time(&partie.tempsDebut);
 
                 initialiserController(&partie);
 
                 //Selectionne une direction
-                for (int i = 0; i < nombreEntite; i++){
+                for (int i = 0; i < partie.nombreEntite; i++){
                     partie.listEntite[i]->direction = DIRECTION_DEFAULT_SERPENT;
                 }
 
@@ -196,7 +194,7 @@ int main(){
                 //Si c'est un obstacle
                 if (caseDirection > CLASSE_SERPENT || caseDirection == MUR || caseDirection == OBSTACLE){
                     partie.listEntite[i]->enVie = false;
-                    nombreJoueurEnVie--;
+                    nombreJoueurMort++;
                     pthread_mutex_unlock(listMutex + i);
                     continue;
                 }
@@ -215,7 +213,6 @@ int main(){
                     if (partie.fruitInfinie){
                         //On rajoute un fruit sur le terrain
                         ajouterAleatoireTerrain(partie.terrain, partie.nombreFruitAjouter, FRUIT, NULL, NULL);
-                        nombreFruit++;
                     }
                 } else if (caseDirection == FRUIT_SPECIAL){
                     partie.listEntite[i]->evolutionScore = partie.scoreFruitSpecial;
@@ -253,7 +250,7 @@ int main(){
         #pragma region AFFICHAGE
 
         if (fenetre == MENU) {
-            afficherTitre(longueur);
+            afficherTitre(LONGEUR_TERRAIN);
         } else if (fenetre == PSEUDO) {
             afficherPseudo(&partie, rangPseudo, numEntitePseudo);
         } else if (fenetre == DECOMPTE) {
@@ -261,7 +258,7 @@ int main(){
         } else if (fenetre == JEU) {
             afficherPartie(&partie);
         } else if (fenetre == FIN) {
-            afficherFin(&partie, longueur);
+            afficherFin(&partie, partie.terrain->longueur);
         }
 
         #pragma endregion
@@ -275,7 +272,7 @@ int main(){
                 fenetre = FIN;
             }
             //Si plus aucun joueur n'est en vie
-            if (nombreJoueurEnVie == 0){
+            if (nombreJoueurMort == partie.nombreEntite){
                 fenetre = FIN;
             }
             //Si toutes les cases sont occupées par des objets solides
@@ -287,8 +284,8 @@ int main(){
             if (fenetre == FIN) {
                 #pragma region GESTION FICHIER
                 //Enregistrement fichier
-                for (int i = 0; i < nombreEntite; i++){
-                    ecrire(CHEMIN_SCORE, partie.listEntite[i]->pseudo, partie.listEntite[i]->score, graine);
+                for (int i = 0; i < partie.nombreEntite; i++){
+                    ecrire(CHEMIN_SCORE, partie.listEntite[i]->pseudo, partie.listEntite[i]->score, partie.graine);
                 }
                 #pragma endregion
             }
@@ -305,7 +302,7 @@ int main(){
     //Le terrain
     freeTerrain(partie.terrain);
     //Les entités
-    for (int i = 0; i < nombreEntite; i++){
+    for (int i = 0; i < partie.nombreEntite; i++){
         free(partie.listEntite[i]);
     }
 

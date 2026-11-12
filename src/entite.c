@@ -6,6 +6,10 @@
 entite * creerEntite(int num){
     entite * ent = malloc(sizeof(entite));
 
+    for (int i = 0; i < TAILLE_MAX_PSEUDO; i++) {
+        ent->pseudo[i] = '\0';
+    }
+
     ent->num = num;
     ent->enVie = true;
 

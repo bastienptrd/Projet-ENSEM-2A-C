@@ -88,6 +88,9 @@ void ajouterAleatoireTerrain(terrain * terrain, int nombre, int obj, int* posX, 
 
 //Libération mémoire de terrain
 void freeTerrain(terrain * terrain){
+    if (terrain == NULL) {
+        return;
+    }
     //Libération en mémoire du terrain
     for (int i = 0; i < terrain->largeur; i++){
         free(terrain->tableau[i]);
