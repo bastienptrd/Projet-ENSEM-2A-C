@@ -10,47 +10,6 @@ void initialiserController(entites * entites){
     UNUSED(entites);
 }
 
-void lirePseudo(char pseudo[TAILLE_MAX_PSEUDO]){
-    SDL_StartTextInput(window);
-    int i = 0;
-    bool launched = true;
-    while (launched){
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
-
-        // On choisit la couleur blanche
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
-        SDL_SetRenderScale(renderer, 3.0f, 3.0f);
-        SDL_RenderDebugText(renderer, 10, 10, "SNAKE");
-        SDL_RenderDebugText(renderer, 10, 30, "Entrez pseudo : ");
-
-        SDL_RenderDebugText(renderer, 10, 50, pseudo);
-
-        SDL_SetRenderScale(renderer, 1.0f, 1.0f);
-        SDL_RenderPresent(renderer);
-
-        while (SDL_PollEvent(&event)){
-            if (event.type == SDL_EVENT_QUIT){
-                launched = false;
-            } else if (event.type == SDL_EVENT_TEXT_INPUT && i < 20){
-                pseudo[i] = event.text.text[0];
-                i++;
-            } else if (event.type == SDL_EVENT_KEY_DOWN){
-                if (event.key.key == SDLK_RETURN){
-                    launched = false;
-                } else if (event.key.key == SDLK_BACKSPACE) {
-                    i--;
-                    pseudo[i] = '\0';
-                }
-            }
-        }
-    }
-    printf("%s\n", pseudo);
-    fflush(stdout);
-    SDL_StopTextInput(window);
-}
-
 void gererEventMenu(entites * entites, int * fenetre) {
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_EVENT_QUIT){
@@ -58,35 +17,38 @@ void gererEventMenu(entites * entites, int * fenetre) {
         } else if (event.type == SDL_EVENT_KEY_DOWN) {
             if (event.key.key == SDLK_SPACE) {
                 *fenetre = PSEUDO;
+            } else if (event.key.key == SDLK_S) {
+                entites->nombreEntite = 1;
+                *fenetre = PSEUDO;
             }
         }
     }
 }
 
-void gererEventPseudo(entites * entites, int * fenetre, int * i, int * numEntite) {
+void gererEventPseudo(entites * entites, int * fenetre, int * indexLettrePseudo, int * indexEntitePseudo) {
     SDL_StartTextInput(window);
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_EVENT_QUIT){
             *(entites->launched) = false;
-        } else if (event.type == SDL_EVENT_TEXT_INPUT && *i < 20){
-            entites->listEntite[*numEntite]->pseudo[*i] = event.text.text[0];
-            (*i)++;
+        } else if (event.type == SDL_EVENT_TEXT_INPUT && *indexLettrePseudo < 20){
+            entites->listEntite[*indexEntitePseudo]->pseudo[*indexLettrePseudo] = event.text.text[0];
+            (*indexLettrePseudo)++;
         } else if (event.type == SDL_EVENT_KEY_DOWN){
             if (event.key.key == SDLK_RETURN){
-                (*numEntite)++;
-                *i = 0;
-                if (*numEntite >= entites->nombreEntite) {
+                (*indexEntitePseudo)++;
+                *indexLettrePseudo = 0;
+                if (*indexEntitePseudo >= entites->nombreEntite) {
                     *fenetre = DECOMPTE;
                 }
             } else if (event.key.key == SDLK_BACKSPACE) {
-                *i = max(0, *i - 1);
-                entites->listEntite[*numEntite]->pseudo[*i] = '\0';
+                *indexLettrePseudo = max(0, *indexLettrePseudo - 1);
+                entites->listEntite[*indexEntitePseudo]->pseudo[*indexLettrePseudo] = '\0';
             } else if (event.key.key == SDLK_UP) {
-                *numEntite = max(0, *numEntite - 1);
-                *i = strlen(entites->listEntite[*numEntite]->pseudo);
+                *indexEntitePseudo = max(0, *indexEntitePseudo - 1);
+                *indexLettrePseudo = strlen(entites->listEntite[*indexEntitePseudo]->pseudo);
             } else if (event.key.key == SDLK_DOWN) {
-                *numEntite = min(entites->nombreEntite - 1, *numEntite + 1);
-                *i = strlen(entites->listEntite[*numEntite]->pseudo);
+                *indexEntitePseudo = min(entites->nombreEntite - 1, *indexEntitePseudo + 1);
+                *indexLettrePseudo = strlen(entites->listEntite[*indexEntitePseudo]->pseudo);
             }
         }
     }

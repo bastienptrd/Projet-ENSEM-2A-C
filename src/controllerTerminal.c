@@ -95,30 +95,25 @@ void initialiserController(entites * entites){
     pthread_create(&clavier, NULL, lireClavier, entites);
 }
 
-
-void lirePseudo(char pseudo[TAILLE_MAX_PSEUDO]){
-    printf("Entrez votre pseudo : ");
-    scanf("%s", pseudo);
-}
-
 void gererEventMenu(entites * entites, int * fenetre){
     UNUSED(entites);
     *fenetre = PSEUDO;
 }
 
-void gererEventPseudo(entites * entites, int * fenetre, int * i, int * numEntite) {
-    UNUSED(i);
+void gererEventPseudo(entites * entites, int * fenetre, int * indexLettrePseudo, int * indexEntitePseudo) {
+    UNUSED(indexLettrePseudo);
 
-    printf("Entrez votre pseudo joueur %d : ", *numEntite + 1);
-    scanf("%s", entites->listEntite[*numEntite]->pseudo);
-    (*numEntite)++;
-    if (*numEntite == entites->nombreEntite) {
+    printf("Entrez votre pseudo joueur %d : ", *indexEntitePseudo + 1);
+    scanf("%s", entites->listEntite[*indexEntitePseudo]->pseudo);
+    (*indexEntitePseudo)++;
+    if (*indexEntitePseudo == entites->nombreEntite) {
         *fenetre = DECOMPTE;
     }
 }
 
 void gererEventDecompte(entites * entites, int * fenetre, time_t tempsDebut){
     UNUSED(entites);
+    UNUSED(tempsDebut);
     *fenetre = JEU;
 }
 void gererEventJeu(entites * entites, int * fenetre){

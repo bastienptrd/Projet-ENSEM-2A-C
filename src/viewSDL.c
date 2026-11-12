@@ -35,7 +35,7 @@ void initWindow(){
     couleurs[1] = magenta;
 }
 
-static void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
+static void affichageTerrain(terrain * terrain, entites * entites){
     // On remplit l'écran de noir
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
@@ -62,10 +62,10 @@ static void affichageTerrain(terrain * terrain, entite* listEntite[NOMBRE_MAX_EN
             bool caseVide = true;
 
             //On parcourt l'ensemble des entités
-            for (int k = 0; k < nombreEntite; k++){
+            for (int k = 0; k < entites->nombreEntite; k++){
 
                 //Si une entité est présente à ces coordonnées
-                if (listEntite[k]->posX == i && listEntite[k]->posY == j){
+                if (entites->listEntite[k]->posX == i && entites->listEntite[k]->posY == j){
                     SDL_SetRenderDrawColor(renderer, couleurs[k].r, couleurs[k].g, couleurs[k].b, couleurs[k].a);
                     caseVide = false;
                 }
@@ -115,13 +115,13 @@ void afficherTitre(int longueur){
     SDL_RenderPresent(renderer);
 }
 
-void afficherPseudo(entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite, int i, int numEntite) {
+void afficherPseudo(entites * entites, int indexLettrePseudo, int numEntite) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     SDL_FRect rect;
     rect.h = 8;
     rect.w = 1;
-    rect.x = 10 + 8 * i;
+    rect.x = 10 + 8 * indexLettrePseudo;
     rect.y = 108 + 30 * numEntite + 1;
 
     // On choisit la couleur blanche
@@ -132,38 +132,38 @@ void afficherPseudo(entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite, in
     SDL_SetRenderScale(renderer, 3.0f, 3.0f);
 
     SDL_RenderFillRect(renderer, &rect);
-    for (int j = 0; j < nombreEntite; j++) {
+    for (int j = 0; j < entites->nombreEntite; j++) {
         SDL_RenderDebugText(renderer, 10, 100 + 30 * j, "Entrez pseudo : ");
-        SDL_RenderDebugText(renderer, 10, 110 + 30 * j, listEntite[j]->pseudo);
+        SDL_RenderDebugText(renderer, 10, 110 + 30 * j, entites->listEntite[j]->pseudo);
     }
 
     SDL_SetRenderScale(renderer, 1.0f, 1.0f);
     SDL_RenderPresent(renderer);
 }
 
-void afficherDecompte(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite, time_t tempsDebut){
-    affichageTerrain(terrain, listEntite, nombreEntite);
+void afficherDecompte(terrain * terrain, entites * entites, time_t tempsDebut){
+    affichageTerrain(terrain, entites);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     int i = difftime(time(NULL), tempsDebut) / TEMPS_CHIFFRES_DECOMPTE;
 
-    char message[5];
+    char message[20];
     sprintf(message, " %d ", NOMBRE_DECOMPTE - i);
     SDL_SetRenderScale(renderer, 3.0f, 3.0f);
     SDL_RenderDebugText(renderer, 10, 10, message);
     SDL_SetRenderScale(renderer, 1.0f, 1.0f);
     SDL_RenderPresent(renderer);
 }
-void afficherPartie(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
-    affichageTerrain(terrain, listEntite, nombreEntite);
+void afficherPartie(terrain * terrain, entites * entites){
+    affichageTerrain(terrain, entites);
 
-    for (int i = 0; i < nombreEntite; i++){
+    for (int i = 0; i < entites->nombreEntite; i++){
         char message[100];
-        if (listEntite[i]->evolutionScore == 0) {
-            sprintf(message, "Score %s : %d", listEntite[i]->pseudo, listEntite[i]->score);
+        if (entites->listEntite[i]->evolutionScore == 0) {
+            sprintf(message, "Score %s : %d", entites->listEntite[i]->pseudo, entites->listEntite[i]->score);
         } else {
-            sprintf(message, "Score %s : %d + %d", listEntite[i]->pseudo, listEntite[i]->score, listEntite[i]->evolutionScore);
+            sprintf(message, "Score %s : %d + %d", entites->listEntite[i]->pseudo, entites->listEntite[i]->score, entites->listEntite[i]->evolutionScore);
         }
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
@@ -174,33 +174,33 @@ void afficherPartie(terrain * terrain, entite * listEntite[NOMBRE_MAX_ENTITE], i
     // On met à jour la fenêtre
     SDL_RenderPresent(renderer);
 }
-void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombreEntite){
+void afficherFin(int longueur, entites * entites){
     UNUSED(longueur);
 
     int nombreJoueurEnVie = 0;
-    for (int i = 0; i < nombreEntite; i++){
-        if (listEntite[i]->enVie){
+    for (int i = 0; i < entites->nombreEntite; i++){
+        if (entites->listEntite[i]->enVie){
             nombreJoueurEnVie++;
         }
     }
 
-    if (nombreJoueurEnVie == 0 && nombreEntite >= 2){
+    if (nombreJoueurEnVie == 0 && entites->nombreEntite >= 2){
         SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_SetRenderScale(renderer, 3.0f, 3.0f);
         SDL_RenderDebugText(renderer, 10, 10, "Partie nulle");
-    } else if (nombreEntite >= 2){
+    } else if (entites->nombreEntite >= 2){
         int vainqueur = 0;
-        int scoreMax = listEntite[0]->score;
-        for (int i = 1; i < nombreEntite; i++){
-            if (listEntite[i]->score > scoreMax){
-                scoreMax = listEntite[i]->score;
+        int scoreMax = entites->listEntite[0]->score;
+        for (int i = 1; i < entites->nombreEntite; i++){
+            if (entites->listEntite[i]->score > scoreMax){
+                scoreMax = entites->listEntite[i]->score;
                 vainqueur = i;
             }
         }
         char message[TAILLE_MAX_PSEUDO + 10];
-        sprintf(message, " %s gagne ", listEntite[vainqueur]->pseudo);
+        sprintf(message, " %s gagne ", entites->listEntite[vainqueur]->pseudo);
         SDL_SetRenderDrawColor(renderer, couleurs[vainqueur].r, couleurs[vainqueur].g, couleurs[vainqueur].b, couleurs[vainqueur].a);
         SDL_RenderClear(renderer);
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -221,19 +221,19 @@ void afficherFin(int longueur, entite * listEntite[NOMBRE_MAX_ENTITE], int nombr
     }
 
     SDL_SetRenderScale(renderer, 2.0f, 2.0f);
-    for (int i = 0; i < nombreEntite; i++){
+    for (int i = 0; i < entites->nombreEntite; i++){
         char message[100];
-        sprintf(message, "Joueur : %s\n", listEntite[i]->pseudo);
+        sprintf(message, "Joueur : %s\n", entites->listEntite[i]->pseudo);
         SDL_RenderDebugText(renderer, 10, 30 + 100 * i, message);
-        sprintf(message, "Score : %d\n", listEntite[i]->score);
+        sprintf(message, "Score : %d\n", entites->listEntite[i]->score);
         SDL_RenderDebugText(renderer, 10, 40 + 100 * i, message);
-        sprintf(message, "Taille serpent : %d\n", listEntite[i]->longueur);
+        sprintf(message, "Taille serpent : %d\n", entites->listEntite[i]->longueur);
         SDL_RenderDebugText(renderer, 10, 50 + 100 * i, message);
-        sprintf(message, "Nombre de fruit mange : %d\n", listEntite[i]->nombreFruitMange);
+        sprintf(message, "Nombre de fruit mange : %d\n", entites->listEntite[i]->nombreFruitMange);
         SDL_RenderDebugText(renderer, 10, 60 + 100 * i, message);
-        sprintf(message, "Nombre de fruit special mange : %d\n", listEntite[i]->nombreFruitSpecialMange);
+        sprintf(message, "Nombre de fruit special mange : %d\n", entites->listEntite[i]->nombreFruitSpecialMange);
         SDL_RenderDebugText(renderer, 10, 70 + 100 * i, message);
-        sprintf(message, "Distance parcouru : %d\n\n", listEntite[i]->distanceParcourue);
+        sprintf(message, "Distance parcouru : %d\n\n", entites->listEntite[i]->distanceParcourue);
         SDL_RenderDebugText(renderer, 10, 80 + 100 * i, message);
     }
     SDL_RenderPresent(renderer);

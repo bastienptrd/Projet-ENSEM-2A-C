@@ -181,7 +181,7 @@ int main(){
 
             #pragma region SCORE
             //Calculs des scores du passage precédent (laisse le temps à l'affichage)
-            for (int i = 0; i < nombreEntite; i++){
+            for (int i = 0; i < ensembleJoueur.nombreEntite; i++){
                 listEntite[i]->score += listEntite[i]->evolutionScore;
                 listEntite[i]->evolutionScore = 0;
             }
@@ -189,7 +189,7 @@ int main(){
 
             #pragma region DEPLACEMENT SERPENT
             //Déplacement des serpents
-            for (int i = 0; i < nombreEntite; i++){
+            for (int i = 0; i < ensembleJoueur.nombreEntite; i++){
                 //Si le joueur est mort, on passe au suivant
                 if (listEntite[i]->enVie == 0){
                     continue;
@@ -263,13 +263,13 @@ int main(){
         if (fenetre == MENU) {
             afficherTitre(longueur);
         } else if (fenetre == PSEUDO) {
-            afficherPseudo(listEntite, nombreEntite, rangPseudo, numEntitePseudo);
+            afficherPseudo(&ensembleJoueur, rangPseudo, numEntitePseudo);
         } else if (fenetre == DECOMPTE) {
-            afficherDecompte(terrain, listEntite, nombreEntite, tempsDebut);
+            afficherDecompte(terrain, &ensembleJoueur, tempsDebut);
         } else if (fenetre == JEU) {
-            afficherPartie(terrain, listEntite, nombreEntite);
+            afficherPartie(terrain, &ensembleJoueur);
         } else if (fenetre == FIN) {
-            afficherFin(longueur, listEntite, nombreEntite);
+            afficherFin(longueur, &ensembleJoueur);
         }
 
         #pragma endregion

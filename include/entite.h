@@ -20,6 +20,13 @@ typedef struct{
     int nombreFruitSpecialMange;
 } entite;
 
+typedef struct{
+    entite * listEntite[NOMBRE_MAX_ENTITE];
+    int nombreEntite;
+    bool pass;
+    bool * launched;
+} entites;
+
 entite * creerEntite(int num);
 int caseSuivante(entite * ent, int ** terrain);
 void deplacerDirection(entite * ent);
