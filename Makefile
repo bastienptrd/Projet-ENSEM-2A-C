@@ -4,10 +4,12 @@
 # ==============================
 
 CC = gcc
-CFLAGS = -Wall -Wextra -g
+SANFLAGS = -fsanitize=address,undefined
+
+CFLAGS = -Wall -Wextra -g $(SANFLAGS)
 CPPFLAGS = -Iinclude
 LDLIBS =
-LDFLAGS =
+LDFLAGS = $(SANFLAGS)
 
 # ==============================
 # Mode d'exécution

@@ -1,5 +1,5 @@
 #pragma once
-#include "entite.h"
+#include "partie.h"
 
 void initWindow();
 void afficherTitre(int longueur);

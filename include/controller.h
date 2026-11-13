@@ -1,6 +1,6 @@
 #pragma once
 
-#include "entite.h"
+#include "partie.h"
 
 void initialiserController(donneePartie * partie);
 void gererEventMenu(donneePartie * partie, int * fenetre);

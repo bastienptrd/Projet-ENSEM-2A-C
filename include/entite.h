@@ -21,31 +21,6 @@ typedef struct{
     int nombreFruitSpecialMange;
 } entite;
 
-typedef struct {
-    terrain * terrain;
-    entite * listEntite[NOMBRE_MAX_ENTITE];
-    int nombreEntite;
-    bool pass;
-
-    // Boucle
-    bool launched;
-    time_t tempsDebut;
-    int graine;
-
-    // Fruit spécial
-    time_t tempApparition;
-    int posFruitSpecialX;
-    int posFruitSpecialY;
-
-    // Paramètre de la partie
-    bool fruitInfinie;
-    int nombreFruitAjouter;
-    int tailleAjouterFruit;
-    int tailleAjouterFruitSpecial;
-    int scoreFruit;
-    int scoreFruitSpecial;
-}donneePartie;
-
 entite * creerEntite(int num);
 int caseSuivante(entite * ent, terrain * terrain);
 void deplacerDirection(entite * ent);

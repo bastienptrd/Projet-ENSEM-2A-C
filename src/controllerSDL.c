@@ -16,6 +16,7 @@ void gererEventMenu(donneePartie * partie, int * fenetre) {
             partie->launched = false;
         } else if (event.type == SDL_EVENT_KEY_DOWN) {
             if (event.key.key == SDLK_SPACE) {
+                partie->nombreEntite = 2;
                 *fenetre = PSEUDO;
             } else if (event.key.key == SDLK_S) {
                 partie->nombreEntite = 1;
@@ -49,6 +50,8 @@ void gererEventPseudo(donneePartie * partie, int * fenetre, int * indexLettrePse
             } else if (event.key.key == SDLK_DOWN) {
                 *indexEntitePseudo = min(partie->nombreEntite - 1, *indexEntitePseudo + 1);
                 *indexLettrePseudo = strlen(partie->listEntite[*indexEntitePseudo]->pseudo);
+            } else if (event.key.key == SDLK_ESCAPE) {
+                *fenetre = MENU;
             }
         }
     }
