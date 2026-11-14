@@ -19,12 +19,12 @@ LDFLAGS = $(SANFLAGS)
 MODE ?= sdl
 
 ifeq ($(MODE),terminal)
-    VIEW_SRC = src/viewTerminal.c
-    CONTROLLER_SRC = src/controllerTerminal.c
+    VIEW_SRC = src/view/viewTerminal.c
+    CONTROLLER_SRC = src/controller/controllerTerminal.c
 
 else ifeq ($(MODE),sdl)
-    VIEW_SRC = src/viewSDL.c
-    CONTROLLER_SRC = src/controllerSDL.c
+    VIEW_SRC = src/view/viewSDL.c
+    CONTROLLER_SRC = src/controller/controllerSDL.c
 
     CPPFLAGS += $(shell pkg-config --cflags sdl3)
     LDLIBS += $(shell pkg-config --libs sdl3)
@@ -45,11 +45,11 @@ BUILD_DIR = build/$(MODE)
 # ==============================
 
 COMMON_SRC = $(filter-out \
-    src/viewTerminal.c \
-    src/viewSDL.c \
-    src/controllerTerminal.c \
-    src/controllerSDL.c, \
-    $(wildcard src/*.c))
+    src/view/viewTerminal.c \
+    src/view/viewSDL.c \
+    src/controller/controllerTerminal.c \
+    src/controller/controllerSDL.c, \
+    $(shell find $(SRC_DIR) -name '*.c'))
 
 SRC = $(COMMON_SRC) $(VIEW_SRC) $(CONTROLLER_SRC)
 
@@ -79,10 +79,8 @@ $(EXEC): $(OBJ)
 # Compilation
 # ==============================
 
-$(BUILD_DIR):
-	mkdir -p $@
-
-$(BUILD_DIR)/%.o: src/%.c | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: src/%.c
+	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -MMD -MP -c $< -o $@
 
 -include $(DEP)

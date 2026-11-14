@@ -22,6 +22,7 @@ typedef struct{
 } entite;
 
 entite * creerEntite(int num);
+void initialiserEntite(entite * ent);
 int caseSuivante(entite * ent, terrain * terrain);
 void deplacerDirection(entite * ent);
 void freeEntite(entite * ent);

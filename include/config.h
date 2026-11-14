@@ -60,7 +60,7 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 #define TAILLE_AJOUTEE_FRUIT_SPECIAL 1
 
 //Séparateur corps des serpents des cases du terrain
-#define CLASSE_SERPENT 1000
+#define CLASSE_SERPENT 100000
 
 //Nombre d'essais de placement des serpents avant crash
 #define NOMBRE_ESSAI_MAX 10000
@@ -75,7 +75,7 @@ enum direction {HAUT,BAS,GAUCHE,DROITE};
 #pragma region AFFICHAGE
 
 // Ensemble des menus disponibles
-enum fenetre {START, MENU, PSEUDO, DECOMPTE, JEU, FIN};
+enum fenetre {PASFENETRE, START, MENU, PSEUDO, DECOMPTE, JEU, FIN};
 
 #define NOMBRE_DECOMPTE 3
 #define TEMPS_CHIFFRES_DECOMPTE 2

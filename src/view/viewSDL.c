@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <unistd.h>
-#include "../include/configSDL.h"
-#include "../include/view.h"
-#include "../include/utilitaire.h"
+#include "../../include/configSDL.h"
+#include "../../include/view.h"
+#include "../../include/utilitaire.h"
 
 
 SDL_Window *window;
@@ -115,14 +115,14 @@ void afficherTitre(int longueur){
     SDL_RenderPresent(renderer);
 }
 
-void afficherPseudo(donneePartie * partie, int indexLettrePseudo, int numEntite) {
+void afficherPseudo(donneePartie * partie) {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     SDL_FRect rect;
     rect.h = 8;
     rect.w = 1;
-    rect.x = 10 + 8 * indexLettrePseudo;
-    rect.y = 108 + 30 * numEntite + 1;
+    rect.x = 10 + 8 * partie->indexLettrePseudo;
+    rect.y = 108 + 30 * partie->indexEntitePseudo + 1;
 
     // On choisit la couleur blanche
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
